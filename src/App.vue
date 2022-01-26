@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <Header />
+    <p>Streak: {{ winStreak }}</p>
     <form @submit.prevent autocomplete="off">
       <div class="letter-input-container">
         <input
@@ -22,6 +23,14 @@
         />
       </div>
     </form>
+    <EndGameModal
+      v-if="isGuessingComplete"
+      :currentGuess="currentGuess"
+      :winStreak="winStreak"
+      :currentWinningWord="currentWinningWord"
+      :isCurrentGuessCorrect="isCurrentGuessCorrect"
+      @next-word="changeWordClearBoard($event)"
+    />
     <GameBoard
       :current-winning-word="currentWinningWord"
       :current-guess="currentGuess"
@@ -33,6 +42,7 @@
 
 <script lang="ts">
 import { defineComponent, Ref, ref } from "vue";
+import EndGameModal from "./components/EndGameModal.vue";
 import GameBoard from "./components/GameBoard.vue";
 import Header from "./components/Header.vue";
 import Keyboard from "./components/Keyboard.vue";
@@ -43,6 +53,7 @@ import { isFiveLetterWord, isWordPlayable } from "./utils/WordChecker";
 export default defineComponent({
   name: "App",
   components: {
+    EndGameModal,
     GameBoard,
     Header,
     Keyboard,
@@ -52,20 +63,22 @@ export default defineComponent({
     const usedWords: string[] = [];
     const currentGuess: string = "";
     const guessedLetters: string[][] = [];
+    const winStreak: number = 0;
 
     return {
       usedWords,
       pendingGuess,
       currentGuess,
       guessedLetters,
+      winStreak,
     };
   },
   computed: {
     isWordValid(): boolean {
       return (
-        isFiveLetterWord(this.pendingGuess) &&
-        isWordPlayable(this.pendingGuess) &&
-        !this.usedWords.includes(this.pendingGuess)
+        isFiveLetterWord(this.pendingGuess.toLowerCase()) &&
+        isWordPlayable(this.pendingGuess.toLowerCase()) &&
+        !this.usedWords.includes(this.pendingGuess.toLowerCase())
       );
     },
     isGuessingComplete(): boolean {
@@ -78,8 +91,8 @@ export default defineComponent({
   methods: {
     setCurrentGuess(): void {
       if (this.isWordValid) {
-        this.currentGuess = this.pendingGuess;
-        this.usedWords = [...this.usedWords, this.pendingGuess];
+        this.currentGuess = this.pendingGuess.toLowerCase();
+        this.usedWords = [...this.usedWords, this.pendingGuess.toLowerCase()];
         this.guessedLetters = this.usedWords
           .map((usedWord) => {
             return usedWord.split("").map((letter, letterIndex) => {
@@ -87,6 +100,9 @@ export default defineComponent({
             });
           })
           .flat();
+        if (this.isCurrentGuessCorrect) {
+          this.winStreak = this.winStreak + 1;
+        }
         this.pendingGuess = "";
       }
     },
@@ -107,6 +123,18 @@ export default defineComponent({
           ? "yellow"
           : "black";
       })[letterIndex];
+    },
+    changeWordClearBoard(winOrLose: string): void {
+      this.pendingGuess = "";
+      this.usedWords = [];
+      const randomIndex: number =
+        Math.floor(Math.random() * fiveLetterWinningWords.length) + 1;
+      this.currentWinningWord = ref(fiveLetterWinningWords[randomIndex]);
+      this.currentGuess = "";
+      this.guessedLetters = [];
+      if (winOrLose === "lose") {
+        this.winStreak = 0;
+      }
     },
   },
   setup() {

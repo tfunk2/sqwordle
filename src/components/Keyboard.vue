@@ -7,7 +7,7 @@
           v-for="topLetter in topRowKeyboard"
           :key="topLetter"
         >
-          {{ topLetter }}
+          {{ topLetter.toUpperCase() }}
         </div>
       </div>
       <div class="middle-row">
@@ -16,7 +16,7 @@
           v-for="middleLetter in middleRowKeyboard"
           :key="middleLetter"
         >
-          {{ middleLetter }}
+          {{ middleLetter.toUpperCase() }}
         </div>
       </div>
       <div class="bottom-row">
@@ -25,7 +25,7 @@
           v-for="bottomLetter in bottomRowKeyboard"
           :key="bottomLetter"
         >
-          {{ bottomLetter }}
+          {{ bottomLetter.toUpperCase() }}
         </div>
       </div>
     </div>
@@ -94,18 +94,22 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   cursor: default;
+  border-radius: 6px;
 }
 
 .green {
   background-color: rgb(62, 172, 62);
+  border-radius: 6px;
 }
 
 .black {
   background-color: rgb(99, 93, 93);
+  border-radius: 6px;
 }
 
 .yellow {
   background-color: rgb(255, 174, 0);
+  border-radius: 6px;
 }
 
 .top-row,

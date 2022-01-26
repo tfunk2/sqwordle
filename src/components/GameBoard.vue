@@ -106,6 +106,7 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: 2px;
 }
 
 .letter {
@@ -117,6 +118,7 @@ export default defineComponent({
   align-items: center;
   color: white;
   font-weight: bolder;
+  border-radius: 2px;
 }
 
 .green {
