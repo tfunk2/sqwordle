@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
-    <form @submit.prevent>
+    <Header />
+    <form @submit.prevent autocomplete="off">
       <div class="letter-input-container">
         <input
           class="five-letter-input"
@@ -11,72 +12,55 @@
           :disabled="isGuessingComplete"
           oninvalid="setCustomValidity('Make sure to use a valid 5 letter word')"
         />
+        <input
+          v-if="!isGuessingComplete"
+          class="button"
+          type="submit"
+          value="Enter"
+          @click="setCurrentGuess"
+          ref="submit"
+        />
       </div>
-      <input
-        class="button"
-        type="submit"
-        value="Submit Answer"
-        @click="setCurrentGuess"
-        ref="submit"
-      />
     </form>
-    <p>isWordValid: {{ isWordValid }}</p>
-    <p>randomIndex: {{ randomIndex }}</p>
-    <p>usedWords: {{ usedWords }}</p>
-    <p>pendingGuess: {{ pendingGuess }}</p>
-    <p>currentGuess: {{ currentGuess }}</p>
-    <p>currentWinningWord: {{ currentWinningWord }}</p>
     <GameBoard
-      :currentWinningWord="currentWinningWord"
-      :currentGuess="currentGuess"
-      :usedWords="usedWords"
+      :current-winning-word="currentWinningWord"
+      :current-guess="currentGuess"
+      :used-words="usedWords"
     />
+    <Keyboard :guessed-letters="guessedLetters" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, Ref, ref } from "vue";
 import GameBoard from "./components/GameBoard.vue";
-import {
-  fiveLetterWinningWords,
-  // fiveLetterPlayableWords,
-} from "./utils/FiveLetterWords";
+import Header from "./components/Header.vue";
+import Keyboard from "./components/Keyboard.vue";
+import { fiveLetterWinningWords } from "./utils/FiveLetterWords";
 import { isFiveLetterWord, isWordPlayable } from "./utils/WordChecker";
+const _ = require("lodash");
 
 export default defineComponent({
   name: "App",
   components: {
     GameBoard,
+    Header,
+    Keyboard,
   },
   data() {
+    const pendingGuess: string = "";
+    const usedWords: string[] = [];
+    const currentGuess: string = "";
+    const guessedLetters: string[] = [];
+
     return {
-      usedWords: [] as Array<String>,
-      pendingGuess: "",
-      currentGuess: "",
-      // currentWinningWord: "",
-      // letter1: "",
-      // letter2: "",
-      // letter3: "",
-      // letter4: "",
-      // letter5: "",
-      // inputRecentlyChanged: "",
+      usedWords,
+      pendingGuess,
+      currentGuess,
+      guessedLetters,
     };
   },
   computed: {
-    // colorsForGuess(): string[] {
-    //   const guessedLetters: string[] = this.currentGuess.split("");
-    //   const winningLetters: string[] = this.currentWinningWord.split("");
-    //   if (this.currentGuess === "") {
-    //     return [];
-    //   }
-    //   return guessedLetters.map((letter, index) => {
-    //     return letter === winningLetters[index]
-    //       ? "green"
-    //       : winningLetters.includes(letter)
-    //       ? "yellow"
-    //       : "black";
-    //   });
-    // },
     isWordValid(): boolean {
       return (
         isFiveLetterWord(this.pendingGuess) &&
@@ -85,32 +69,21 @@ export default defineComponent({
       );
     },
     isGuessingComplete(): boolean {
-      return this.usedWords.length === 6;
+      return this.usedWords.length === 6 || this.isCurrentGuessCorrect;
     },
     isCurrentGuessCorrect(): boolean {
       return this.currentGuess.toLowerCase() === this.currentWinningWord;
     },
-    // previousGuess(): string {
-    //   if (this.usedWords.length > 0) {
-    //     return this.usedWords[this.usedWords.length - 1];
-    //   }
-    //   return "";
-    // },
-    // pendingGuess(): string {
-    //   return [
-    //     this.letter1,
-    //     this.letter2,
-    //     this.letter3,
-    //     this.letter4,
-    //     this.letter5,
-    //   ].join("");
-    // },
   },
   methods: {
     setCurrentGuess(): void {
       if (this.isWordValid) {
         this.currentGuess = this.pendingGuess;
         this.usedWords = [...this.usedWords, this.pendingGuess];
+        this.guessedLetters = _.uniq([
+          ...this.guessedLetters,
+          ...this.pendingGuess.split(""),
+        ]);
         this.pendingGuess = "";
       }
     },
@@ -131,13 +104,17 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 #app {
   width: 100%;
   height: 100%;
 }
 
 .app-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   max-width: 95%;
 }
 
@@ -147,6 +124,7 @@ export default defineComponent({
 
 .letter-input-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   max-width: 100%;

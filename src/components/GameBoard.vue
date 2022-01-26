@@ -1,8 +1,5 @@
 <template>
   <div class="game-board">
-    <p>Guesses Remaining: {{ guessesRemaining }}</p>
-    <p>Current Guess --> {{ currentGuess }}</p>
-    <p>Is Current Guess Playable? --> {{ isCurrentGuessInPlayableWordList }}</p>
     <div v-if="usedWords.length" class="guess-container">
       <div v-for="word in usedWords" :key="word" class="word-guess">
         <div
@@ -14,53 +11,65 @@
         </div>
       </div>
     </div>
-    <p>colorsForWord: {{ colorsForWord(currentGuess) }}</p>
   </div>
 </template>
 
 <script lang='ts'>
+import { defineComponent } from "vue";
 import { isFiveLetterWord } from "../utils/WordChecker";
 import {
   fiveLetterWinningWords,
   fiveLetterPlayableWords,
 } from "../utils/FiveLetterWords";
-import _ from "lodash";
+// import _ from "lodash";
 
-export default {
+export default defineComponent({
   name: "GameBoard",
   props: {
-    currentGuess: String,
-    usedWords: [String],
-    currentWinningWord: String,
+    currentGuess: {
+      type: String,
+      required: true,
+    },
+    usedWords: {
+      type: Array,
+      required: true,
+    },
+    currentWinningWord: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {};
   },
   computed: {
-    isCurrentGuessFiveLetters() {
+    isCurrentGuessFiveLetters(): boolean {
       return isFiveLetterWord(this.currentGuess);
     },
-    isCurrentGuessInPlayableWordList() {
+    isCurrentGuessInPlayableWordList(): boolean {
       return this.fiveLetterPlayableWordList.includes(this.currentGuess);
     },
-    fiveLetterWinningWordList() {
-      return _.uniq(fiveLetterWinningWords.sort()).map((word) =>
-        word.toLowerCase()
-      );
+    fiveLetterWinningWordList(): string[] {
+      return fiveLetterWinningWords
+        .sort()
+        .map((word: string) => word.toLowerCase());
     },
-    fiveLetterPlayableWordList() {
-      return _.uniq(fiveLetterPlayableWords.sort());
+    fiveLetterPlayableWordList(): string[] {
+      return fiveLetterPlayableWords.sort();
     },
     guessesRemaining(): number {
       return 6 - this.usedWords.length;
     },
+    isGuessMatchingWinningWord(): boolean {
+      return this.currentGuess === this.currentWinningWord;
+    },
   },
   methods: {
-    colorsForWord(word: string, letterIndex: string): string[] {
+    colorsForWord(word: string, letterIndex: number): string {
       const guessedLetters: string[] = this.lettersOfGuess(word);
       const winningLetters: string[] = this.currentWinningWord.split("");
       if (word === "") {
-        return [];
+        return "";
       }
       return guessedLetters.map((letter, index) => {
         return letter === winningLetters[index]
@@ -74,12 +83,13 @@ export default {
       return word.split("");
     },
   },
-};
+});
 </script>
 
 <style scoped>
 .guess-container {
   width: fit-content;
+  height: fit-content;
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: auto auto auto auto auto auto;
