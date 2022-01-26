@@ -2,15 +2,17 @@
   <div class="keyboard">
     <div class="keyboard-container">
       <div class="top-row">
-        <!-- :class="whichColor(topLetter) + ' grey'" -->
-        <div class="grey" v-for="topLetter in topRowKeyboard" :key="topLetter">
+        <div
+          :class="whichColor(topLetter) + ' grey'"
+          v-for="topLetter in topRowKeyboard"
+          :key="topLetter"
+        >
           {{ topLetter }}
         </div>
       </div>
       <div class="middle-row">
-        <!-- :class="whichColor(middleLetter) + ' grey'" -->
         <div
-          class="grey"
+          :class="whichColor(middleLetter) + ' grey'"
           v-for="middleLetter in middleRowKeyboard"
           :key="middleLetter"
         >
@@ -18,9 +20,8 @@
         </div>
       </div>
       <div class="bottom-row">
-        <!-- :class="whichColor(bottomLetter) + ' grey'" -->
         <div
-          class="grey"
+          :class="whichColor(bottomLetter) + ' grey'"
           v-for="bottomLetter in bottomRowKeyboard"
           :key="bottomLetter"
         >
@@ -32,13 +33,13 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   name: "Keyboard",
   props: {
     guessedLetters: {
-      type: [String],
+      type: Array as PropType<string[][]>,
       required: true,
     },
   },
@@ -54,9 +55,30 @@ export default defineComponent({
   },
   computed: {},
   methods: {
-    // whichColor(letter: string): string {
-    //   return
-    // },
+    whichColor(letter: string): string {
+      const letterInstances: string[][] = this.guessedLetters.filter(
+        (letterWithColor) => letterWithColor[0] === letter
+      );
+      const colors: string[] = letterInstances.map(
+        (letterWithColor) => letterWithColor[1]
+      );
+      const greenGuesses: string[] = colors.filter(
+        (color) => color === "green"
+      );
+      const yellowGuesses: string[] = colors.filter(
+        (color) => color === "yellow"
+      );
+      const blackGuesses: string[] = colors.filter(
+        (color) => color === "black"
+      );
+      return greenGuesses.length > 0
+        ? "green"
+        : yellowGuesses.length > 0
+        ? "yellow"
+        : blackGuesses.length > 0
+        ? "black"
+        : "grey";
+    },
   },
 });
 </script>
@@ -72,6 +94,18 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   cursor: default;
+}
+
+.green {
+  background-color: rgb(62, 172, 62);
+}
+
+.black {
+  background-color: rgb(99, 93, 93);
+}
+
+.yellow {
+  background-color: rgb(255, 174, 0);
 }
 
 .top-row,

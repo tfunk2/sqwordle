@@ -38,7 +38,7 @@ import Header from "./components/Header.vue";
 import Keyboard from "./components/Keyboard.vue";
 import { fiveLetterWinningWords } from "./utils/FiveLetterWords";
 import { isFiveLetterWord, isWordPlayable } from "./utils/WordChecker";
-const _ = require("lodash");
+// const _ = require("lodash");
 
 export default defineComponent({
   name: "App",
@@ -51,7 +51,7 @@ export default defineComponent({
     const pendingGuess: string = "";
     const usedWords: string[] = [];
     const currentGuess: string = "";
-    const guessedLetters: string[] = [];
+    const guessedLetters: string[][] = [];
 
     return {
       usedWords,
@@ -80,16 +80,33 @@ export default defineComponent({
       if (this.isWordValid) {
         this.currentGuess = this.pendingGuess;
         this.usedWords = [...this.usedWords, this.pendingGuess];
-        this.guessedLetters = _.uniq([
-          ...this.guessedLetters,
-          ...this.pendingGuess.split(""),
-        ]);
+        this.guessedLetters = this.usedWords
+          .map((usedWord) => {
+            return usedWord.split("").map((letter, letterIndex) => {
+              return [letter, this.colorsForWord(usedWord, letterIndex)];
+            });
+          })
+          .flat();
         this.pendingGuess = "";
       }
     },
     setNewWinningWord(): void {
       const randomIndex = Math.random() * fiveLetterWinningWords.length;
       this.currentWinningWord = fiveLetterWinningWords[randomIndex];
+    },
+    colorsForWord(word: string, letterIndex: number): string {
+      const guessedLetters: string[] = word.split("");
+      const winningLetters: string[] = this.currentWinningWord.split("");
+      if (word === "") {
+        return "";
+      }
+      return guessedLetters.map((letter, index) => {
+        return letter === winningLetters[index]
+          ? "green"
+          : winningLetters.includes(letter)
+          ? "yellow"
+          : "black";
+      })[letterIndex];
     },
   },
   setup() {
