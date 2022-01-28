@@ -2,7 +2,7 @@
   <div class="app-container">
     <Header />
     <p id="streak-text">Streak: {{ winStreak }}</p>
-    <form @submit.prevent autocomplete="off">
+    <form @submit.prevent autocomplete="off" class="guess-form">
       <div class="letter-input-container">
         <input
           class="five-letter-input"
@@ -149,23 +149,28 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style>
 #app {
+  height: 100vh;
   min-width: 100%;
   min-height: 100%;
-  background-color: black;
 }
 
 #pending-guess {
   outline: none;
 }
 
+.guess-form {
+  justify-self: flex-start;
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   margin: 0;
+  height: 100%;
 }
 
 .letter-input {
@@ -185,5 +190,6 @@ export default defineComponent({
   /* font-family: "Advent Pro", sans-serif; */
   font-family: "Bungee Hairline", cursive;
   /* font-family: "Monofett", cursive; */
+  justify-self: flex-start;
 }
 </style>

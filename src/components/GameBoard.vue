@@ -87,6 +87,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.game-board {
+  justify-self: flex-start;
+}
+
 .guess-container {
   width: fit-content;
   height: fit-content;
@@ -111,8 +115,8 @@ export default defineComponent({
 }
 
 .letter {
-  width: 2em;
-  height: 2em;
+  width: 1em;
+  height: 1em;
   margin: 4px;
   display: flex;
   justify-content: center;
@@ -123,6 +127,8 @@ export default defineComponent({
   /* font-family: "Advent Pro", sans-serif; */
   font-family: "Bungee Hairline", cursive;
   /* font-family: "Monofett", cursive; */
+  font-size: 3.5em;
+  line-height: 0.5;
 }
 
 .green {

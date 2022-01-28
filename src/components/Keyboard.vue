@@ -126,5 +126,9 @@ export default defineComponent({
 
 .keyboard {
   width: 100%;
+  justify-self: flex-end;
+  margin-bottom: 20px;
+  justify-self: flex-end;
+  margin-top: auto;
 }
 </style>
