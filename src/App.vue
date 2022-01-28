@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
     <Header />
-    <p>Streak: {{ winStreak }}</p>
+    <p id="streak-text">Streak: {{ winStreak }}</p>
     <form @submit.prevent autocomplete="off">
       <div class="letter-input-container">
         <input
           class="five-letter-input"
-          id="pending-guess-2"
+          id="pending-guess"
           v-model="pendingGuess"
           maxlength="5"
           minlength="5"
@@ -14,7 +14,7 @@
           oninvalid="setCustomValidity('Make sure to use a valid 5 letter word')"
         />
         <input
-          v-if="!isGuessingComplete"
+          v-show="!isGuessingComplete"
           class="button"
           type="submit"
           value="Enter"
@@ -151,8 +151,13 @@ export default defineComponent({
 
 <style scoped>
 #app {
-  width: 100%;
-  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  background-color: black;
+}
+
+#pending-guess {
+  outline: none;
 }
 
 .app-container {
@@ -160,7 +165,7 @@ export default defineComponent({
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  max-width: 95%;
+  margin: 0;
 }
 
 .letter-input {
@@ -173,5 +178,12 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   max-width: 100%;
+}
+
+#streak-text {
+  color: white;
+  /* font-family: "Advent Pro", sans-serif; */
+  font-family: "Bungee Hairline", cursive;
+  /* font-family: "Monofett", cursive; */
 }
 </style>

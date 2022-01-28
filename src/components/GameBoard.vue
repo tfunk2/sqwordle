@@ -107,6 +107,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   border-radius: 2px;
+  padding: 2px 4px;
 }
 
 .letter {
@@ -119,6 +120,9 @@ export default defineComponent({
   color: white;
   font-weight: bolder;
   border-radius: 2px;
+  /* font-family: "Advent Pro", sans-serif; */
+  font-family: "Bungee Hairline", cursive;
+  /* font-family: "Monofett", cursive; */
 }
 
 .green {

@@ -1,32 +1,30 @@
 <template>
   <div class="keyboard">
-    <div class="keyboard-container">
-      <div class="top-row">
-        <div
-          :class="whichColor(topLetter) + ' grey'"
-          v-for="topLetter in topRowKeyboard"
-          :key="topLetter"
-        >
-          {{ topLetter.toUpperCase() }}
-        </div>
+    <div class="top-row">
+      <div
+        :class="whichColor(topLetter) + ' grey'"
+        v-for="topLetter in topRowKeyboard"
+        :key="topLetter"
+      >
+        {{ topLetter.toUpperCase() }}
       </div>
-      <div class="middle-row">
-        <div
-          :class="whichColor(middleLetter) + ' grey'"
-          v-for="middleLetter in middleRowKeyboard"
-          :key="middleLetter"
-        >
-          {{ middleLetter.toUpperCase() }}
-        </div>
+    </div>
+    <div class="middle-row">
+      <div
+        :class="whichColor(middleLetter) + ' grey'"
+        v-for="middleLetter in middleRowKeyboard"
+        :key="middleLetter"
+      >
+        {{ middleLetter.toUpperCase() }}
       </div>
-      <div class="bottom-row">
-        <div
-          :class="whichColor(bottomLetter) + ' grey'"
-          v-for="bottomLetter in bottomRowKeyboard"
-          :key="bottomLetter"
-        >
-          {{ bottomLetter.toUpperCase() }}
-        </div>
+    </div>
+    <div class="bottom-row">
+      <div
+        :class="whichColor(bottomLetter) + ' grey'"
+        v-for="bottomLetter in bottomRowKeyboard"
+        :key="bottomLetter"
+      >
+        {{ bottomLetter.toUpperCase() }}
       </div>
     </div>
   </div>
@@ -85,31 +83,36 @@ export default defineComponent({
 
 <style scoped>
 .grey {
-  margin: 4px;
-  background-color: lightgray;
-  width: 2em;
-  height: 2em;
-  grid-area: letter;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: default;
-  border-radius: 6px;
+  /* font-family: 'Advent Pro', sans-serif; */
+  /* font-family: 'Bungee Hairline', cursive; */
+  font-family: "Monofett", cursive;
+  font-size: 10vw;
+  /* font-size: clamp(2em, 3.5em, 5em); */
+  color: rgb(155, 155, 155);
+  line-height: 0.7;
+  margin: 2px;
 }
 
 .green {
-  background-color: rgb(62, 172, 62);
-  border-radius: 6px;
+  /* background-color: rgb(62, 172, 62); */
+  color: rgb(62, 172, 62);
+  /* border-radius: 6px; */
 }
 
 .black {
-  background-color: rgb(99, 93, 93);
-  border-radius: 6px;
+  /* background-color: rgb(99, 93, 93); */
+  color: rgb(29, 29, 29);
+  /* border-radius: 6px; */
 }
 
 .yellow {
-  background-color: rgb(255, 174, 0);
-  border-radius: 6px;
+  /* background-color: rgb(255, 174, 0); */
+  color: rgb(255, 174, 0);
+  /* border-radius: 6px; */
 }
 
 .top-row,
@@ -119,10 +122,6 @@ export default defineComponent({
   flex-direction: row;
   justify-content: center;
   align-items: center;
-}
-
-.keyboard-container {
-  width: 100%;
 }
 
 .keyboard {

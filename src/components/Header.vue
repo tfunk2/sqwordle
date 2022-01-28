@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <h1>SQWORDLE</h1>
+    <h1 class="header-title">SQWORDLE</h1>
   </div>
 </template>
 
@@ -22,5 +22,15 @@ export default {
   color: white;
   width: 100%;
   text-align: center;
+}
+
+.header-title {
+  /* font-family: 'Advent Pro', sans-serif; */
+  /* font-family: 'Bungee Hairline', cursive; */
+  font-family: "Monofett", cursive;
+  font-size: 3.5em;
+  line-height: 0.7;
+  margin-top: 0.2em;
+  margin-bottom: 0.3em;
 }
 </style>
