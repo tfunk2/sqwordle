@@ -1,13 +1,13 @@
 <template>
   <div class="end-game-modal">
     <div v-if="isCurrentGuessCorrect" class="winning-modal">
-      <p>Congrats, {{ currentWinningWord.toUpperCase() }} was the word!</p>
-      <p>Streak increased to {{ winStreak }}!</p>
+      <!-- <p>Congrats, {{ currentWinningWord.toUpperCase() }} was the word!</p>
+      <p>Streak increased to {{ winStreak }}!</p> -->
       <button @click="handleWordChange('win')">Next Word</button>
     </div>
     <div v-if="!isCurrentGuessCorrect" class="winning-modal">
-      <p>Sorry, {{ currentWinningWord.toUpperCase() }} was the correct word!</p>
-      <p>Streak dropped back to 0 :(</p>
+      <!-- <p>Sorry, {{ currentWinningWord.toUpperCase() }} was the correct word!</p>
+      <p>Streak dropped back to 0 :(</p> -->
       <button @click="handleWordChange('lose')">Try Again</button>
     </div>
   </div>

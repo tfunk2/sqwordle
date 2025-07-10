@@ -1,6 +1,6 @@
 <template>
   <div class="game-board">
-    <div v-if="usedWords.length" class="guess-container">
+    <div class="guess-container" :style="usedWords.length ">
       <div v-for="word in usedWords" :key="word" class="word-guess">
         <div
           v-for="(letter, letterIndex) in lettersOfGuess(word)"
@@ -10,12 +10,41 @@
           {{ letter.toUpperCase() }}
         </div>
       </div>
+      <div v-if="!isGuessingComplete" class="word-guess">
+        <div
+          v-for="(letter, letterIndex) in pendingGuess.split('')"
+          class="black letter"
+          :key="letterIndex"
+        >
+          {{ letter.toUpperCase() }}
+        </div>
+        <div
+          v-if="pendingGuess.split('').length < 5"
+          class="black letter"
+        />
+        <div
+          v-if="pendingGuess.split('').length < 4"
+          class="black letter"
+        />
+        <div
+          v-if="pendingGuess.split('').length < 3"
+          class="black letter"
+        />
+        <div
+          v-if="pendingGuess.split('').length < 2"
+          class="black letter"
+        />
+        <div
+          v-if="pendingGuess.split('').length < 1"
+          class="black letter"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang='ts'>
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 import { isFiveLetterWord } from "../utils/WordChecker";
 import {
   fiveLetterWinningWords,
@@ -30,8 +59,16 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    pendingGuess: {
+      type: String,
+      required: true,
+    },
+    isGuessingComplete: {
+      type: Boolean,
+      required: true,
+    },
     usedWords: {
-      type: Array,
+      type: Array as PropType<string[]>,
       required: true,
     },
     currentWinningWord: {
@@ -40,7 +77,7 @@ export default defineComponent({
     },
   },
   data() {
-    return {};
+    return {}
   },
   computed: {
     isCurrentGuessFiveLetters(): boolean {
@@ -63,6 +100,13 @@ export default defineComponent({
     isGuessMatchingWinningWord(): boolean {
       return this.currentGuess === this.currentWinningWord;
     },
+    styleForGrid(): string {
+      let autos = [];
+      for (let x = 1; x < this.usedWords.length; x++) {
+        autos.push("auto");
+      }
+      return autos.join(" ")
+    }
   },
   methods: {
     colorsForWord(word: string, letterIndex: number): string {
@@ -88,7 +132,9 @@ export default defineComponent({
 
 <style scoped>
 .game-board {
+  position: relative;
   justify-self: flex-start;
+  z-index: 99;
 }
 
 .guess-container {
@@ -96,11 +142,23 @@ export default defineComponent({
   height: fit-content;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: auto auto auto auto auto auto;
+  grid-template-rows: auto;
   column-gap: 10px;
   row-gap: 15px;
   background-color: black;
-  padding: 12px;
+  padding: 24px;
+}
+
+#pending-guess-container {
+  height: 100%;
+  width: fit-content;
+  max-width: 328px;
+  background-color: lightgray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 2px;
+  padding: 2px 4px;
 }
 
 .word-guess {
@@ -124,9 +182,7 @@ export default defineComponent({
   color: white;
   font-weight: bolder;
   border-radius: 2px;
-  /* font-family: "Advent Pro", sans-serif; */
   font-family: "Bungee Hairline", cursive;
-  /* font-family: "Monofett", cursive; */
   font-size: 3.5em;
   line-height: 0.5;
 }

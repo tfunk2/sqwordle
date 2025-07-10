@@ -20,11 +20,21 @@
     </div>
     <div class="bottom-row">
       <div
+        class="enter-button"
+      >
+        ENTER
+      </div>
+      <div
         :class="whichColor(bottomLetter) + ' grey'"
         v-for="bottomLetter in bottomRowKeyboard"
         :key="bottomLetter"
       >
         {{ bottomLetter.toUpperCase() }}
+      </div>
+      <div
+        class="backspace-button"
+      >
+        BACK
       </div>
     </div>
   </div>
@@ -130,5 +140,24 @@ export default defineComponent({
   margin-bottom: 20px;
   justify-self: flex-end;
   margin-top: auto;
+}
+
+.enter-button, .backspace-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "arial", cursive;
+  font-size: 3.5em;
+  line-height: 0.5;
+  background-color: rgb(155, 155, 155);
+  color: rgb(46, 46, 46);
+  letter-spacing: -6px;
+  padding: 20px 20px 28px 20px;
+  border-radius: 40px;
+  height: 48px;
+  margin-top: 12px;
+  font-family: "Advent Pro", sans-serif; 
+  /* font-family: "Bungee Hairline", cursive; */
+  font-family: "Monofett", cursive;
 }
 </style>

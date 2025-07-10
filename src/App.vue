@@ -5,27 +5,37 @@
       <p id="streak-text">STREAK</p>
       <b id="streak-number-text">{{ winStreak }}</b>
     </div>
-    <form @submit.prevent autocomplete="off" class="guess-form">
-      <div class="letter-input-container">
-        <input
-          class="five-letter-input"
-          id="pending-guess"
-          v-model="pendingGuess"
-          maxlength="5"
-          minlength="5"
-          :disabled="isGuessingComplete"
-          oninvalid="setCustomValidity('Make sure to use a valid 5 letter word')"
-        />
-        <input
-          v-show="!isGuessingComplete"
-          class="button"
-          type="submit"
-          value="Enter"
-          @click="setCurrentGuess"
-          ref="submit"
-        />
-      </div>
-    </form>
+    <div>
+      <form @submit.prevent autocomplete="off" class="guess-form">
+        <div class="letter-input-container">
+          <input
+            class="five-letter-input"
+            id="pending-guess"
+            v-model="pendingGuess"
+            maxlength="5"
+            minlength="5"
+            :disabled="isGuessingComplete"
+            oninvalid="setCustomValidity('Make sure to use a valid 5 letter word')"
+            autofocus
+          />
+          <input
+            v-show="!isGuessingComplete"
+            class="button"
+            type="submit"
+            value="Enter"
+            @click="setCurrentGuess"
+            ref="submit"
+          />
+        </div>
+      </form>
+      <GameBoard
+        :current-winning-word="currentWinningWord"
+        :current-guess="currentGuess"
+        :used-words="usedWords"
+        :is-guessing-complete="isGuessingComplete"
+        :pending-guess="pendingGuess"
+      />
+    </div>
     <EndGameModal
       v-if="isGuessingComplete"
       :currentGuess="currentGuess"
@@ -33,11 +43,6 @@
       :currentWinningWord="currentWinningWord"
       :isCurrentGuessCorrect="isCurrentGuessCorrect"
       @next-word="changeWordClearBoard($event)"
-    />
-    <GameBoard
-      :current-winning-word="currentWinningWord"
-      :current-guess="currentGuess"
-      :used-words="usedWords"
     />
     <Keyboard :guessed-letters="guessedLetters" />
   </div>
@@ -138,16 +143,52 @@ export default defineComponent({
       if (winOrLose === "lose") {
         this.winStreak = 0;
       }
+      this.setInputFocus()
     },
   },
   setup() {
     const randomIndex: number =
       Math.floor(Math.random() * fiveLetterWinningWords.length) + 1;
     const currentWinningWord: Ref = ref(fiveLetterWinningWords[randomIndex]);
+    const setInputFocus = () => {
+      const inputField = document.getElementById("pending-guess");
+
+      if (inputField) {
+        // Set initial focus (can also be done with autofocus attribute)
+        inputField.focus();
+        
+        // Re-focus the input field whenever it loses focus
+        inputField.addEventListener("blur", function() {
+          inputField.focus();
+        });
+      }
+    }
+
     return {
       randomIndex,
       currentWinningWord,
+      setInputFocus
     };
+  },
+  mounted() {
+    document.addEventListener("DOMContentLoaded", () => {
+      const inputField = document.getElementById("pending-guess");
+      const body = document.getElementsByTagName('body')
+
+      if (inputField) {
+        // Set initial focus (can also be done with autofocus attribute)
+        inputField.focus();
+        
+        // Re-focus the input field whenever it loses focus
+        inputField.addEventListener("blur", function() {
+          inputField.focus();
+        });
+        
+        body[0].addEventListener("click", function() {
+          inputField.focus();
+        });
+      }
+    });
   },
 });
 </script>
@@ -161,10 +202,13 @@ export default defineComponent({
 
 #pending-guess {
   outline: none;
+  background-color: transparent;
 }
 
 .guess-form {
   justify-self: flex-start;
+  position: absolute;
+  z-index: 1;
 }
 
 .app-container {
@@ -181,11 +225,13 @@ export default defineComponent({
 }
 
 .letter-input-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   max-width: 100%;
+  z-index: 1;
 }
 
 #streak-text {
