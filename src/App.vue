@@ -1,7 +1,10 @@
 <template>
   <div class="app-container">
     <Header />
-    <p id="streak-text">Streak: {{ winStreak }}</p>
+    <div id="streak-container">
+      <p id="streak-text">STREAK</p>
+      <b id="streak-number-text">{{ winStreak }}</b>
+    </div>
     <form @submit.prevent autocomplete="off" class="guess-form">
       <div class="letter-input-container">
         <input
@@ -187,9 +190,21 @@ export default defineComponent({
 
 #streak-text {
   color: white;
-  /* font-family: "Advent Pro", sans-serif; */
   font-family: "Bungee Hairline", cursive;
-  /* font-family: "Monofett", cursive; */
-  justify-self: flex-start;
+  margin-bottom: 0px;
+}
+
+#streak-number-text {
+  color: white;
+  font-family: "Bungee Hairline", cursive;
+  font-size: 24px;
+  margin-top: 0px;
+}
+
+#streak-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 </style>

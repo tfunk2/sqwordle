@@ -7,7 +7,6 @@
 <script lang='ts'>
 export default {
   name: "Header",
-  props: {},
   data() {
     return {};
   },
