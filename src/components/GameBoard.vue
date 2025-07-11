@@ -10,7 +10,10 @@
           {{ letter.toUpperCase() }}
         </div>
       </div>
-      <div v-if="!isGuessingComplete" class="word-guess">
+      <div 
+        v-if="!isGuessingComplete" 
+        :class="{'word-guess': true, 'animate__animated animate__headShake': shakeInvalid}"
+      >
         <div
           v-for="(letter, letterIndex) in pendingGuess.split('')"
           class="black letter"
@@ -75,6 +78,10 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    shakeWordGuess: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {}
@@ -106,6 +113,9 @@ export default defineComponent({
         autos.push("auto");
       }
       return autos.join(" ")
+    },
+    shakeInvalid() {
+      return this.shakeWordGuess
     }
   },
   methods: {

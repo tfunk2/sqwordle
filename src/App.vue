@@ -13,7 +13,7 @@
             id="pending-guess"
             v-model="pendingGuess"
             maxlength="5"
-            minlength="5"
+            minlength="1"
             autofocus
           />
           <input
@@ -32,6 +32,7 @@
         :used-words="usedWords"
         :is-guessing-complete="isGuessingComplete"
         :pending-guess="pendingGuess"
+        :shake-word-guess="shakeWordGuess"
       />
     </div>
     <EndGameModal
@@ -45,6 +46,8 @@
     <Keyboard 
       :guessed-letters="guessedLetters" 
       @type-letter="typeLetter($event)"
+      @backspace="backspace"
+      @submit-guess="setCurrentGuess"
     />
   </div>
 </template>
@@ -80,6 +83,8 @@ export default defineComponent({
     const totalWins: Ref<number> = ref(0);
     const totalLosses: Ref<number> = ref(0);
 
+    const shakeWordGuess = ref(false);
+
     const randomIndex: number =
       Math.floor(Math.random() * fiveLetterWinningWords.length) + 1;
     const currentWinningWord: Ref = ref(fiveLetterWinningWords[randomIndex]);
@@ -96,10 +101,6 @@ export default defineComponent({
           inputField.focus();
         });
       }
-    }
-
-    const shakeInvalid = () => {
-      console.log('shakeInvalid')
     }
 
     const updateUsedWords = (incomingWord: string, clearUsedWords: boolean = false) => {
@@ -159,7 +160,15 @@ export default defineComponent({
     }
 
     const typeLetter = (letter: string) => {
-      pendingGuess.value = pendingGuess.value + letter
+      if (pendingGuess.value.length < 5) {
+        pendingGuess.value = pendingGuess.value + letter
+      }
+    }
+
+    const backspace = () => {
+      if (pendingGuess.value.length) {
+        pendingGuess.value = pendingGuess.value.slice(0, -1)
+      }
     }
 
     const setCurrentGuess = (): void => {
@@ -178,6 +187,11 @@ export default defineComponent({
         }
         pendingGuess.value = "";
         updateUsedWords(currentGuess.value, false);
+      } else {
+        shakeWordGuess.value = true;
+        setTimeout(() => {
+          shakeWordGuess.value = false;
+        }, 500)
       }
     }
 
@@ -233,6 +247,8 @@ export default defineComponent({
     })
 
     return {
+      backspace,
+      shakeWordGuess,
       updateCache,
       typeLetter,
       setCurrentGuess,
@@ -253,7 +269,6 @@ export default defineComponent({
       randomIndex,
       currentWinningWord,
       setInputFocus,
-      shakeInvalid
     };
   },
   mounted() {

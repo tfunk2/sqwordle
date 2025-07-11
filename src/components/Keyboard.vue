@@ -3,11 +3,15 @@
     <div style="display: flex; justify-content: center; width: 100%">
       <div
         class="enter-button"
+        style="cursor: pointer;"
+        @click="submitGuess"
       >
         ENTER
       </div>
       <div
         class="backspace-button"
+        style="cursor: pointer;"
+        @click="backspace"
       >
         BACK
       </div>
@@ -95,6 +99,12 @@ export default defineComponent({
     },
     typeLetter(letter: string) {
       this.$emit('type-letter', letter)
+    },
+    backspace() {
+      this.$emit('backspace')
+    },
+    submitGuess() {
+      this.$emit('submit-guess')
     }
   },
 });
