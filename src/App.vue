@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, Ref, ref } from "vue";
+import { computed, ComputedRef, defineComponent, Ref, ref } from "vue";
 import EndGameModal from "./components/EndGameModal.vue";
 import SessionStats from "./components/SessionStats.vue";
 import GameBoard from "./components/GameBoard.vue";
@@ -69,96 +69,40 @@ export default defineComponent({
     Keyboard,
     SessionStats
   },
-  data() {
-    const pendingGuess: string = "";
-    const usedWords: string[] = [];
-    const currentGuess: string = "";
-    const guessedLetters: string[][] = [];
-    const winStreak: number = 0;
-    const longestStreak: number = 0;
-    const winPercent: number = 0;
-    const totalWins: number = 0;
-    const totalLosses: number = 0;
+  setup() {
+    const pendingGuess: Ref<string> = ref("");
+    const usedWords: Ref<string[]> = ref([]);
+    const currentGuess: Ref<string> = ref("");
+    const guessedLetters: Ref<string[][]> = ref([]);
+    const winStreak: Ref<number> = ref(0);
+    const longestStreak: Ref<number> = ref(0);
+    const winPercent: Ref<number> = ref(0);
+    const totalWins: Ref<number> = ref(0);
+    const totalLosses: Ref<number> = ref(0);
 
-    return {
-      usedWords,
-      pendingGuess,
-      currentGuess,
-      guessedLetters,
-      longestStreak,
-      totalWins,
-      totalLosses,
-      winPercent,
-      winStreak,
-    };
-  },
-  computed: {
-    isWordValid(): boolean {
-      return (
-        isFiveLetterWord(this.pendingGuess.toLowerCase()) &&
-        isWordPlayable(this.pendingGuess.toLowerCase()) &&
-        !this.usedWords.includes(this.pendingGuess.toLowerCase())
-      );
-    },
-    isGuessingComplete(): boolean {
-      return this.usedWords.length === 6 || this.isCurrentGuessCorrect;
-    },
-    isCurrentGuessCorrect(): boolean {
-      return this.currentGuess.toLowerCase() === this.currentWinningWord;
-    },
-  },
-  methods: {
-    setCurrentGuess(): void {
-      if (this.isWordValid) {
-        this.currentGuess = this.pendingGuess.toLowerCase();
-        this.usedWords = [...this.usedWords, this.pendingGuess.toLowerCase()];
-        this.guessedLetters = this.usedWords
-          .map((usedWord) => {
-            return usedWord.split("").map((letter, letterIndex) => {
-              return [letter, this.colorsForWord(usedWord, letterIndex)];
-            });
-          })
-          .flat();
-        if (this.isCurrentGuessCorrect) {
-          this.winStreak = this.winStreak + 1;
-        }
-        this.pendingGuess = "";
-        this.updateUsedWords(this.currentGuess, false);
-      }
-    },
-    setNewWinningWord(): void {
-      const randomIndex = Math.random() * fiveLetterWinningWords.length;
-      this.currentWinningWord = fiveLetterWinningWords[randomIndex];
-    },
-    colorsForWord(word: string, letterIndex: number): string {
-      const guessedLetters: string[] = word.split("");
-      const winningLetters: string[] = this.currentWinningWord.split("");
-      if (word === "") {
-        return "";
-      }
-      return guessedLetters.map((letter, index) => {
-        return letter === winningLetters[index]
-          ? "green"
-          : winningLetters.includes(letter)
-          ? "yellow"
-          : "black";
-      })[letterIndex];
-    },
-    changeWordClearBoard(winOrLose: string): void {
-      this.pendingGuess = "";
+    const randomIndex: number =
+      Math.floor(Math.random() * fiveLetterWinningWords.length) + 1;
+    const currentWinningWord: Ref = ref(fiveLetterWinningWords[randomIndex]);
 
-      this.usedWords = [];
-      const randomIndex: number =
-        Math.floor(Math.random() * fiveLetterWinningWords.length) + 1;
-      this.currentWinningWord = ref(fiveLetterWinningWords[randomIndex]);
-      this.currentGuess = "";
-      this.guessedLetters = [];
-      if (winOrLose === "lose") {
-        this.winStreak = 0;
+    const setInputFocus = () => {
+      const inputField = document.getElementById("pending-guess");
+
+      if (inputField) {
+        // Set initial focus (can also be done with autofocus attribute)
+        inputField.focus();
+        
+        // Re-focus the input field whenever it loses focus
+        inputField.addEventListener("blur", function() {
+          inputField.focus();
+        });
       }
-      this.setInputFocus()
-    },
-    updateUsedWords(incomingWord: string, clearUsedWords: boolean = false) {
+    }
+
+    const shakeInvalid = () => {
+      console.log('shakeInvalid')
+    }
+
+    const updateUsedWords = (incomingWord: string, clearUsedWords: boolean = false) => {
       const currentSession = localStorage.getItem('currentSession') || '{}'
       const parsedSession = JSON.parse(currentSession)
       const updatedSessionObj = {...parsedSession}
@@ -169,8 +113,9 @@ export default defineComponent({
         updatedSessionObj.usedWords = [...updatedSessionObj.usedWords, incomingWord]
         localStorage.setItem('currentSession', JSON.stringify(updatedSessionObj))
       }
-    },
-    updateCache(updateKey: string, updateValue: string|number|null = null) {
+    }
+
+    const updateCache = (updateKey: string, updateValue: string|number|null = null) => {
       const currentSession = localStorage.getItem('currentSession') || '{}'
       const parsedSession = JSON.parse(currentSession)
       const updatedSessionObj = {...parsedSession}
@@ -178,7 +123,7 @@ export default defineComponent({
       switch (updateKey) {
         case "pendingGuess":
           // If less than 5 chars, add letter to pending guess
-          if (this.pendingGuess.length < 5) {
+          if (pendingGuess.value.length < 5) {
             updatedSessionObj[updateKey] = parsedSession[updateKey] + updateValue
           }
           break;
@@ -211,34 +156,100 @@ export default defineComponent({
       }
 
       localStorage.setItem('currentSession', JSON.stringify(updatedSessionObj))
-    },
-    typeLetter(letter: string) {
-      this.pendingGuess = this.pendingGuess + letter
     }
-  },
-  setup() {
-    const randomIndex: number =
-      Math.floor(Math.random() * fiveLetterWinningWords.length) + 1;
-    const currentWinningWord: Ref = ref(fiveLetterWinningWords[randomIndex]);
-    const setInputFocus = () => {
-      const inputField = document.getElementById("pending-guess");
 
-      if (inputField) {
-        // Set initial focus (can also be done with autofocus attribute)
-        inputField.focus();
-        
-        // Re-focus the input field whenever it loses focus
-        inputField.addEventListener("blur", function() {
-          inputField.focus();
-        });
+    const typeLetter = (letter: string) => {
+      pendingGuess.value = pendingGuess.value + letter
+    }
+
+    const setCurrentGuess = (): void => {
+      if (isWordValid.value) {
+        currentGuess.value = pendingGuess.value.toLowerCase();
+        usedWords.value = [...usedWords.value, pendingGuess.value.toLowerCase()];
+        guessedLetters.value = usedWords.value
+          .map((usedWord) => {
+            return usedWord.split("").map((letter, letterIndex) => {
+              return [letter, colorsForWord(usedWord, letterIndex)];
+            });
+          })
+          .flat();
+        if (isCurrentGuessCorrect.value) {
+          winStreak.value = winStreak.value + 1;
+        }
+        pendingGuess.value = "";
+        updateUsedWords(currentGuess.value, false);
       }
     }
 
-    const shakeInvalid = () => {
-      console.log('shakeInvalid')
+    const setNewWinningWord = (): void => {
+      const randomIndex = Math.random() * fiveLetterWinningWords.length;
+      currentWinningWord.value = fiveLetterWinningWords[randomIndex];
     }
 
+    const colorsForWord = (word: string, letterIndex: number): string => {
+      const guessedLetters: string[] = word.split("");
+      const winningLetters: string[] = currentWinningWord.value.split("");
+      if (word === "") {
+        return "";
+      }
+      return guessedLetters.map((letter, index) => {
+        return letter === winningLetters[index]
+          ? "green"
+          : winningLetters.includes(letter)
+          ? "yellow"
+          : "black";
+      })[letterIndex];
+    }
+
+    const changeWordClearBoard = (winOrLose: string): void => {
+      pendingGuess.value = "";
+
+      usedWords.value = [];
+      const randomIndex: number =
+        Math.floor(Math.random() * fiveLetterWinningWords.length) + 1;
+      currentWinningWord.value = ref(fiveLetterWinningWords[randomIndex]);
+      currentGuess.value = "";
+      guessedLetters.value = [];
+      if (winOrLose === "lose") {
+        winStreak.value = 0;
+      }
+      setInputFocus()
+    }
+
+    const isWordValid: ComputedRef<boolean> = computed(() => {
+      return (
+        isFiveLetterWord(pendingGuess.value.toLowerCase()) &&
+        isWordPlayable(pendingGuess.value.toLowerCase()) &&
+        !usedWords.value.includes(pendingGuess.value.toLowerCase())
+      );
+    })
+
+    const isGuessingComplete: ComputedRef<boolean> = computed(() => {
+      return usedWords.value.length === 6 || isCurrentGuessCorrect.value;
+    })
+
+    const isCurrentGuessCorrect: ComputedRef<boolean> = computed(() => {
+      return currentGuess.value.toLowerCase() === currentWinningWord.value;
+    })
+
     return {
+      updateCache,
+      typeLetter,
+      setCurrentGuess,
+      setNewWinningWord,
+      changeWordClearBoard,
+      isCurrentGuessCorrect,
+      isGuessingComplete,
+      usedWords,
+      pendingGuess,
+      currentGuess,
+      guessedLetters,
+      isWordValid,
+      longestStreak,
+      totalWins,
+      totalLosses,
+      winPercent,
+      winStreak,
       randomIndex,
       currentWinningWord,
       setInputFocus,
