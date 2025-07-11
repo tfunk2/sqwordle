@@ -1,10 +1,23 @@
 <template>
   <div class="keyboard">
+    <div style="display: flex; justify-content: center; width: 100%">
+      <div
+        class="enter-button"
+      >
+        ENTER
+      </div>
+      <div
+        class="backspace-button"
+      >
+        BACK
+      </div>
+    </div>
     <div class="top-row">
       <div
         :class="whichColor(topLetter) + ' grey'"
         v-for="topLetter in topRowKeyboard"
         :key="topLetter"
+        @click="typeLetter(topLetter)"
       >
         {{ topLetter.toUpperCase() }}
       </div>
@@ -14,27 +27,20 @@
         :class="whichColor(middleLetter) + ' grey'"
         v-for="middleLetter in middleRowKeyboard"
         :key="middleLetter"
+        @click="typeLetter(middleLetter)"
       >
         {{ middleLetter.toUpperCase() }}
       </div>
     </div>
     <div class="bottom-row">
-      <div
-        class="enter-button"
-      >
-        ENTER
-      </div>
+
       <div
         :class="whichColor(bottomLetter) + ' grey'"
         v-for="bottomLetter in bottomRowKeyboard"
         :key="bottomLetter"
+        @click="typeLetter(bottomLetter)"
       >
         {{ bottomLetter.toUpperCase() }}
-      </div>
-      <div
-        class="backspace-button"
-      >
-        BACK
       </div>
     </div>
   </div>
@@ -87,6 +93,9 @@ export default defineComponent({
         ? "black"
         : "grey";
     },
+    typeLetter(letter: string) {
+      this.$emit('type-letter', letter)
+    }
   },
 });
 </script>
@@ -100,7 +109,7 @@ export default defineComponent({
   /* font-family: 'Advent Pro', sans-serif; */
   /* font-family: 'Bungee Hairline', cursive; */
   font-family: "Monofett", cursive;
-  font-size: 10vw;
+  font-size: 8vw;
   /* font-size: clamp(2em, 3.5em, 5em); */
   color: rgb(155, 155, 155);
   line-height: 0.7;
@@ -135,11 +144,13 @@ export default defineComponent({
 }
 
 .keyboard {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   justify-self: flex-end;
   margin-bottom: 20px;
   justify-self: flex-end;
-  margin-top: auto;
+  margin-top: 12px;
 }
 
 .enter-button, .backspace-button {
@@ -147,17 +158,23 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   font-family: "arial", cursive;
-  font-size: 3.5em;
-  line-height: 0.5;
-  background-color: rgb(155, 155, 155);
-  color: rgb(46, 46, 46);
+  font-size: 3em;
+  /* background-color: rgb(155, 155, 155); */
+  color: white;
   letter-spacing: -6px;
-  padding: 20px 20px 28px 20px;
-  border-radius: 40px;
-  height: 48px;
-  margin-top: 12px;
-  font-family: "Advent Pro", sans-serif; 
+  /* border-radius: 20px; */
+  height: 4vw;
+  padding-bottom: 14px;
+  /* font-family: "Advent Pro", sans-serif; */
   /* font-family: "Bungee Hairline", cursive; */
   font-family: "Monofett", cursive;
+  margin-left: 16px;
+  margin-right: 16px; 
+}
+
+@media screen and (width >= 900px) {
+  .grey {
+    font-size: 80px;
+  }
 }
 </style>

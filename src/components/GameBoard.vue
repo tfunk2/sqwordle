@@ -1,6 +1,6 @@
 <template>
   <div class="game-board">
-    <div class="guess-container" :style="usedWords.length ">
+    <div class="guess-container">
       <div v-for="word in usedWords" :key="word" class="word-guess">
         <div
           v-for="(letter, letterIndex) in lettersOfGuess(word)"
@@ -146,7 +146,8 @@ export default defineComponent({
   column-gap: 10px;
   row-gap: 15px;
   background-color: black;
-  padding: 24px;
+  padding: 12px;
+  padding-bottom: 16px;
 }
 
 #pending-guess-container {

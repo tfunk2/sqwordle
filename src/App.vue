@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <Header />
-    <div id="streak-container">
-      <p id="streak-text">STREAK</p>
-      <b id="streak-number-text">{{ winStreak }}</b>
-    </div>
+
+    <SessionStats 
+      :win-streak="winStreak"
+    />
     <div>
       <form @submit.prevent autocomplete="off" class="guess-form">
         <div class="letter-input-container">
@@ -14,8 +14,6 @@
             v-model="pendingGuess"
             maxlength="5"
             minlength="5"
-            :disabled="isGuessingComplete"
-            oninvalid="setCustomValidity('Make sure to use a valid 5 letter word')"
             autofocus
           />
           <input
@@ -44,13 +42,17 @@
       :isCurrentGuessCorrect="isCurrentGuessCorrect"
       @next-word="changeWordClearBoard($event)"
     />
-    <Keyboard :guessed-letters="guessedLetters" />
+    <Keyboard 
+      :guessed-letters="guessedLetters" 
+      @type-letter="typeLetter($event)"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, Ref, ref } from "vue";
 import EndGameModal from "./components/EndGameModal.vue";
+import SessionStats from "./components/SessionStats.vue";
 import GameBoard from "./components/GameBoard.vue";
 import Header from "./components/Header.vue";
 import Keyboard from "./components/Keyboard.vue";
@@ -65,6 +67,7 @@ export default defineComponent({
     GameBoard,
     Header,
     Keyboard,
+    SessionStats
   },
   data() {
     const pendingGuess: string = "";
@@ -72,12 +75,20 @@ export default defineComponent({
     const currentGuess: string = "";
     const guessedLetters: string[][] = [];
     const winStreak: number = 0;
+    const longestStreak: number = 0;
+    const winPercent: number = 0;
+    const totalWins: number = 0;
+    const totalLosses: number = 0;
 
     return {
       usedWords,
       pendingGuess,
       currentGuess,
       guessedLetters,
+      longestStreak,
+      totalWins,
+      totalLosses,
+      winPercent,
       winStreak,
     };
   },
@@ -112,6 +123,7 @@ export default defineComponent({
           this.winStreak = this.winStreak + 1;
         }
         this.pendingGuess = "";
+        this.updateUsedWords(this.currentGuess, false);
       }
     },
     setNewWinningWord(): void {
@@ -134,6 +146,7 @@ export default defineComponent({
     },
     changeWordClearBoard(winOrLose: string): void {
       this.pendingGuess = "";
+
       this.usedWords = [];
       const randomIndex: number =
         Math.floor(Math.random() * fiveLetterWinningWords.length) + 1;
@@ -145,6 +158,63 @@ export default defineComponent({
       }
       this.setInputFocus()
     },
+    updateUsedWords(incomingWord: string, clearUsedWords: boolean = false) {
+      const currentSession = localStorage.getItem('currentSession') || '{}'
+      const parsedSession = JSON.parse(currentSession)
+      const updatedSessionObj = {...parsedSession}
+      if (clearUsedWords) {
+        updatedSessionObj.usedWords = []
+        localStorage.setItem('currentSession', updatedSessionObj)
+      } else {
+        updatedSessionObj.usedWords = [...updatedSessionObj.usedWords, incomingWord]
+        localStorage.setItem('currentSession', JSON.stringify(updatedSessionObj))
+      }
+    },
+    updateCache(updateKey: string, updateValue: string|number|null = null) {
+      const currentSession = localStorage.getItem('currentSession') || '{}'
+      const parsedSession = JSON.parse(currentSession)
+      const updatedSessionObj = {...parsedSession}
+
+      switch (updateKey) {
+        case "pendingGuess":
+          // If less than 5 chars, add letter to pending guess
+          if (this.pendingGuess.length < 5) {
+            updatedSessionObj[updateKey] = parsedSession[updateKey] + updateValue
+          }
+          break;
+        case "usedWords":
+          // Add used word to cache
+          updatedSessionObj[updateKey] = [...parsedSession[updateKey], updateValue]
+          break;
+        case "guessedLetters":
+          updatedSessionObj[updateKey] = updateValue
+          break;
+        case "winStreak":
+          // Clear winStreak or add 1
+          if (updateValue === 'clear') {
+            updatedSessionObj[updateKey] = 0
+          } else {
+            updatedSessionObj[updateKey] = updatedSessionObj[updateKey] + 1
+          }
+          break;
+        case "longestStreak":
+          updatedSessionObj[updateKey] = updateValue
+          break;
+        case "totalWins":
+          updatedSessionObj[updateKey] = updateValue
+          break;
+        case "totalLosses":
+          updatedSessionObj[updateKey] = updateValue
+          break;
+          default:
+            console.log('Something went wrong with updating cache')
+      }
+
+      localStorage.setItem('currentSession', JSON.stringify(updatedSessionObj))
+    },
+    typeLetter(letter: string) {
+      this.pendingGuess = this.pendingGuess + letter
+    }
   },
   setup() {
     const randomIndex: number =
@@ -164,10 +234,15 @@ export default defineComponent({
       }
     }
 
+    const shakeInvalid = () => {
+      console.log('shakeInvalid')
+    }
+
     return {
       randomIndex,
       currentWinningWord,
-      setInputFocus
+      setInputFocus,
+      shakeInvalid
     };
   },
   mounted() {
@@ -189,6 +264,33 @@ export default defineComponent({
         });
       }
     });
+    // Retrieving data
+    const currentSession: any = localStorage.getItem('currentSession');
+    const parsedSession = JSON.parse(currentSession);
+
+    if (!parsedSession) {
+      // Saving data
+      localStorage.setItem('currentSession', JSON.stringify({
+        pendingGuess: '',
+        usedWords: [],
+        guessedLetters: [],
+        winStreak: 0,
+        longestStreak: 0,
+        currentWinningWord: '',
+        totalWins: 0,
+        totalLosses: 0,
+      }));
+    } else {
+      console.log('parsedSession', parsedSession)
+      this.pendingGuess = parsedSession.pendingGuess
+      this.usedWords = parsedSession.usedWords
+      this.guessedLetters = parsedSession.guessedLetters
+      this.winStreak = parsedSession.winStreak
+      this.longestStreak = parsedSession.longestStreak
+      this.totalWins = parsedSession.totalWins
+      this.totalLosses = parsedSession.totalLosses
+      // currentWinningWord.value = parsedSession.currentWinningWord
+    }
   },
 });
 </script>
@@ -232,25 +334,5 @@ export default defineComponent({
   justify-content: center;
   max-width: 100%;
   z-index: 1;
-}
-
-#streak-text {
-  color: white;
-  font-family: "Bungee Hairline", cursive;
-  margin-bottom: 0px;
-}
-
-#streak-number-text {
-  color: white;
-  font-family: "Bungee Hairline", cursive;
-  font-size: 24px;
-  margin-top: 0px;
-}
-
-#streak-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 </style>
