@@ -8,12 +8,12 @@
     <div id="stats-container">
       <p id="streak-text">WIN</p>
       <p id="streak-text">PERCENT</p>
-      <b id="streak-number-text">{{ winStreak }}</b>
+      <b id="streak-number-text">{{ winLossPercentage }}%</b>
     </div>
     <div id="stats-container">
       <p id="streak-text">LONGEST</p>
       <p id="streak-text">STREAK</p>
-      <b id="streak-number-text">{{ winStreak }}</b>
+      <b id="streak-number-text">{{ longestStreak }}</b>
     </div>
   </section>
 </template>
@@ -25,6 +25,14 @@ export default defineComponent({
   name: "SessionStats",
   props: {
     winStreak: {
+      type: Number,
+      required: true,
+    },
+    longestStreak: {
+      type: Number,
+      required: true,
+    },
+    winLossPercentage: {
       type: Number,
       required: true,
     },

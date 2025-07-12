@@ -4,6 +4,8 @@
 
     <SessionStats 
       :win-streak="winStreak"
+      :longest-streak="longestStreak"
+      :win-loss-percentage="winLossPercentage"
     />
     <div>
       <form @submit.prevent autocomplete="off" class="guess-form">
@@ -53,7 +55,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ComputedRef, defineComponent, Ref, ref } from "vue";
+import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch } from "vue";
 import EndGameModal from "./components/EndGameModal.vue";
 import SessionStats from "./components/SessionStats.vue";
 import GameBoard from "./components/GameBoard.vue";
@@ -79,15 +81,16 @@ export default defineComponent({
     const guessedLetters: Ref<string[][]> = ref([]);
     const winStreak: Ref<number> = ref(0);
     const longestStreak: Ref<number> = ref(0);
-    const winPercent: Ref<number> = ref(0);
     const totalWins: Ref<number> = ref(0);
     const totalLosses: Ref<number> = ref(0);
 
     const shakeWordGuess = ref(false);
 
-    const randomIndex: number =
-      Math.floor(Math.random() * fiveLetterWinningWords.length) + 1;
-    const currentWinningWord: Ref = ref(fiveLetterWinningWords[randomIndex]);
+    const getRandomIndex = (): number => {
+      return Math.floor(Math.random() * fiveLetterWinningWords.length) + 1;
+    }
+
+    const currentWinningWord: Ref<string> = ref('');
 
     const setInputFocus = () => {
       const inputField = document.getElementById("pending-guess");
@@ -103,19 +106,6 @@ export default defineComponent({
       }
     }
 
-    const updateUsedWords = (incomingWord: string, clearUsedWords: boolean = false) => {
-      const currentSession = localStorage.getItem('currentSession') || '{}'
-      const parsedSession = JSON.parse(currentSession)
-      const updatedSessionObj = {...parsedSession}
-      if (clearUsedWords) {
-        updatedSessionObj.usedWords = []
-        localStorage.setItem('currentSession', updatedSessionObj)
-      } else {
-        updatedSessionObj.usedWords = [...updatedSessionObj.usedWords, incomingWord]
-        localStorage.setItem('currentSession', JSON.stringify(updatedSessionObj))
-      }
-    }
-
     const updateCache = (updateKey: string, updateValue: string|number|null = null) => {
       const currentSession = localStorage.getItem('currentSession') || '{}'
       const parsedSession = JSON.parse(currentSession)
@@ -123,33 +113,44 @@ export default defineComponent({
 
       switch (updateKey) {
         case "pendingGuess":
-          // If less than 5 chars, add letter to pending guess
-          if (pendingGuess.value.length < 5) {
-            updatedSessionObj[updateKey] = parsedSession[updateKey] + updateValue
+          if (updateValue === 'clear') {
+            updatedSessionObj[updateKey] = ''
+          } else {
+            // If less than 5 chars, add letter to pending guess
+            if (pendingGuess.value.length <= 5) {
+              updatedSessionObj[updateKey] = updateValue
+            }
           }
           break;
         case "usedWords":
-          // Add used word to cache
-          updatedSessionObj[updateKey] = [...parsedSession[updateKey], updateValue]
+          if (updateValue === 'clear') {
+            // Clear usedWords
+            updatedSessionObj[updateKey] = []
+          } else {
+            // Add used word to cache
+            updatedSessionObj[updateKey] = [...parsedSession[updateKey], updateValue]
+          }
           break;
         case "guessedLetters":
-          updatedSessionObj[updateKey] = updateValue
+          if (updateValue === 'clear') {
+            updatedSessionObj[updateKey] = []
+          } else {
+            updatedSessionObj[updateKey] = updateValue
+          }
           break;
         case "winStreak":
-          // Clear winStreak or add 1
+        case "totalWins":
+        case "totalLosses":
+        case "longestStreak":
+          // Clear or add 1
           if (updateValue === 'clear') {
             updatedSessionObj[updateKey] = 0
           } else {
             updatedSessionObj[updateKey] = updatedSessionObj[updateKey] + 1
           }
           break;
-        case "longestStreak":
-          updatedSessionObj[updateKey] = updateValue
-          break;
-        case "totalWins":
-          updatedSessionObj[updateKey] = updateValue
-          break;
-        case "totalLosses":
+        case "currentGuess":
+        case "currentWinningWord":
           updatedSessionObj[updateKey] = updateValue
           break;
           default:
@@ -174,6 +175,8 @@ export default defineComponent({
     const setCurrentGuess = (): void => {
       if (isWordValid.value) {
         currentGuess.value = pendingGuess.value.toLowerCase();
+        updateCache('currentGuess', currentGuess.value)
+
         usedWords.value = [...usedWords.value, pendingGuess.value.toLowerCase()];
         guessedLetters.value = usedWords.value
           .map((usedWord) => {
@@ -184,9 +187,16 @@ export default defineComponent({
           .flat();
         if (isCurrentGuessCorrect.value) {
           winStreak.value = winStreak.value + 1;
+          updateCache('winStreak')
+          totalWins.value = totalWins.value + 1;
+          updateCache('totalWins')
+          if (winStreak.value > longestStreak.value) {
+            longestStreak.value = longestStreak.value + 1
+            updateCache('longestStreak')
+          }
         }
         pendingGuess.value = "";
-        updateUsedWords(currentGuess.value, false);
+        updateCache('usedWords', currentGuess.value)
       } else {
         shakeWordGuess.value = true;
         setTimeout(() => {
@@ -196,8 +206,8 @@ export default defineComponent({
     }
 
     const setNewWinningWord = (): void => {
-      const randomIndex = Math.random() * fiveLetterWinningWords.length;
-      currentWinningWord.value = fiveLetterWinningWords[randomIndex];
+      currentWinningWord.value = fiveLetterWinningWords[getRandomIndex()];
+      updateCache('currentWinningWord', currentWinningWord.value)
     }
 
     const colorsForWord = (word: string, letterIndex: number): string => {
@@ -217,15 +227,24 @@ export default defineComponent({
 
     const changeWordClearBoard = (winOrLose: string): void => {
       pendingGuess.value = "";
+      updateCache('pendingGuess', 'clear')
 
       usedWords.value = [];
-      const randomIndex: number =
-        Math.floor(Math.random() * fiveLetterWinningWords.length) + 1;
-      currentWinningWord.value = ref(fiveLetterWinningWords[randomIndex]);
+      updateCache('usedWords', 'clear')
+
+      currentWinningWord.value = fiveLetterWinningWords[getRandomIndex()];
+      updateCache('currentWinningWord', currentWinningWord.value)
+      
       currentGuess.value = "";
+
       guessedLetters.value = [];
+      updateCache('guessedLetters', 'clear')
+
       if (winOrLose === "lose") {
         winStreak.value = 0;
+        updateCache('winStreak', 'clear')
+        totalLosses.value = totalLosses.value + 1
+        updateCache('totalLosses')
       }
       setInputFocus()
     }
@@ -243,36 +262,28 @@ export default defineComponent({
     })
 
     const isCurrentGuessCorrect: ComputedRef<boolean> = computed(() => {
+      if (currentGuess.value.length != 5) {
+        return false;
+      }
       return currentGuess.value.toLowerCase() === currentWinningWord.value;
     })
 
-    return {
-      backspace,
-      shakeWordGuess,
-      updateCache,
-      typeLetter,
-      setCurrentGuess,
-      setNewWinningWord,
-      changeWordClearBoard,
-      isCurrentGuessCorrect,
-      isGuessingComplete,
-      usedWords,
-      pendingGuess,
-      currentGuess,
-      guessedLetters,
-      isWordValid,
-      longestStreak,
-      totalWins,
-      totalLosses,
-      winPercent,
-      winStreak,
-      randomIndex,
-      currentWinningWord,
-      setInputFocus,
-    };
-  },
-  mounted() {
-    document.addEventListener("DOMContentLoaded", () => {
+    const winLossPercentage = computed(() => {
+      if (totalWins.value === 0) {
+        return 0;
+      } else if (totalWins.value === totalWins.value + totalLosses.value) {
+        return 100
+      }
+
+      return Math.round((totalWins.value / (totalWins.value + totalLosses.value)) * 100)
+    })
+
+    watch(pendingGuess, () => {
+      updateCache('pendingGuess', pendingGuess.value)
+    })
+
+    onMounted(() => {
+          document.addEventListener("DOMContentLoaded", () => {
       const inputField = document.getElementById("pending-guess");
       const body = document.getElementsByTagName('body')
 
@@ -298,25 +309,52 @@ export default defineComponent({
       // Saving data
       localStorage.setItem('currentSession', JSON.stringify({
         pendingGuess: '',
+        currentGuess: '',
         usedWords: [],
-        guessedLetters: [],
         winStreak: 0,
         longestStreak: 0,
         currentWinningWord: '',
         totalWins: 0,
         totalLosses: 0,
+        isCurrentGuessCorrect: false
       }));
+      setNewWinningWord();
     } else {
       console.log('parsedSession', parsedSession)
-      this.pendingGuess = parsedSession.pendingGuess
-      this.usedWords = parsedSession.usedWords
-      this.guessedLetters = parsedSession.guessedLetters
-      this.winStreak = parsedSession.winStreak
-      this.longestStreak = parsedSession.longestStreak
-      this.totalWins = parsedSession.totalWins
-      this.totalLosses = parsedSession.totalLosses
-      // currentWinningWord.value = parsedSession.currentWinningWord
+      pendingGuess.value = parsedSession.pendingGuess
+      currentGuess.value = parsedSession.currentGuess
+      usedWords.value = parsedSession.usedWords
+      winStreak.value = parsedSession.winStreak
+      longestStreak.value = parsedSession.longestStreak
+      currentWinningWord.value = parsedSession.currentWinningWord
+      totalWins.value = parsedSession.totalWins
+      totalLosses.value = parsedSession.totalLosses
     }
+    })
+
+    return {
+      backspace,
+      shakeWordGuess,
+      updateCache,
+      typeLetter,
+      setCurrentGuess,
+      setNewWinningWord,
+      changeWordClearBoard,
+      isCurrentGuessCorrect,
+      isGuessingComplete,
+      usedWords,
+      pendingGuess,
+      currentGuess,
+      guessedLetters,
+      isWordValid,
+      longestStreak,
+      totalWins,
+      totalLosses,
+      winLossPercentage,
+      winStreak,
+      currentWinningWord,
+      setInputFocus,
+    };
   },
 });
 </script>
