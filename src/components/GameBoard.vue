@@ -149,15 +149,15 @@ export default defineComponent({
 
 .guess-container {
   width: fit-content;
-  height: fit-content;
-  display: grid;
+  height: 405px;
+  display: flex;
+  flex-direction: column;
   grid-template-columns: auto;
   grid-template-rows: auto;
-  column-gap: 10px;
-  row-gap: 15px;
   background-color: black;
   padding: 12px;
   padding-bottom: 16px;
+  border-radius: 6px;
 }
 
 #pending-guess-container {
@@ -173,9 +173,8 @@ export default defineComponent({
 }
 
 .word-guess {
-  height: 100%;
+  height: fit-content;
   width: fit-content;
-  background-color: lightgray;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -193,7 +192,7 @@ export default defineComponent({
   color: white;
   font-weight: bolder;
   border-radius: 2px;
-  font-family: "Bungee Hairline", cursive;
+  font-family: "Bungee Hairline", sans-serif;
   font-size: 3.5em;
   line-height: 0.5;
 }

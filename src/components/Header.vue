@@ -25,8 +25,8 @@ export default {
 
 .header-title {
   /* font-family: 'Advent Pro', sans-serif; */
-  /* font-family: 'Bungee Hairline', cursive; */
-  font-family: "Monofett", cursive;
+  /* font-family: 'Bungee Hairline', sans-serif; */
+  font-family: "Monofett", sans-serif;
   font-size: 3.5em;
   line-height: 0.7;
   margin-top: 0.2em;

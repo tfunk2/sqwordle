@@ -1,19 +1,19 @@
 <template>
   <section class="stats-section">
-    <div id="stats-container">
-      <p id="streak-text">CURRENT</p>
-      <p id="streak-text">STREAK</p>
-      <b id="streak-number-text">{{ winStreak }}</b>
+    <div class="stats-container" id="current-streak">
+      <p class="streak-text">CURRENT</p>
+      <p class="streak-text">STREAK</p>
+      <b class="streak-number-text">{{ winStreak }}</b>
     </div>
-    <div id="stats-container">
-      <p id="streak-text">WIN</p>
-      <p id="streak-text">PERCENT</p>
-      <b id="streak-number-text">{{ winLossPercentage }}%</b>
+    <div class="stats-container">
+      <p class="streak-text">WIN</p>
+      <p class="streak-text">PERCENT</p>
+      <b class="streak-number-text">{{ winLossPercentage }}%</b>
     </div>
-    <div id="stats-container">
-      <p id="streak-text">LONGEST</p>
-      <p id="streak-text">STREAK</p>
-      <b id="streak-number-text">{{ longestStreak }}</b>
+    <div class="stats-container" id="longest-streak">
+      <p class="streak-text">LONGEST</p>
+      <p class="streak-text">STREAK</p>
+      <b class="streak-number-text">{{ longestStreak }}</b>
     </div>
   </section>
 </template>
@@ -46,23 +46,23 @@ export default defineComponent({
 </script>
 
 <style scoped>
-#streak-text {
+.streak-text {
   color: white;
-  font-family: "Bungee Hairline", cursive;
+  font-family: "Bungee Hairline", sans-serif;
   margin: 0px;
   line-height: 0.8;
   padding-bottom: 4px;
 }
 
-#streak-number-text {
+.streak-number-text {
   color: white;
-  font-family: "Bungee Hairline", cursive;
+  font-family: "Bungee Hairline", sans-serif;
   font-size: 36px;
   margin-top: 0px;
   line-height: 0.7
 }
 
-#stats-container {
+.stats-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -78,5 +78,13 @@ export default defineComponent({
   display: flex;
   margin-top: 16px;
   margin-bottom: 16px;
+}
+
+#current-streak {
+  border-radius: 4px 0px 0px 4px;
+}
+
+#longest-streak {
+  border-radius: 0px 4px 4px 0px;
 }
 </style>

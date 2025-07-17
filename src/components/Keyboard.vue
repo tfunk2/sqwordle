@@ -117,8 +117,8 @@ export default defineComponent({
   align-items: center;
   cursor: default;
   /* font-family: 'Advent Pro', sans-serif; */
-  /* font-family: 'Bungee Hairline', cursive; */
-  font-family: "Monofett", cursive;
+  /* font-family: 'Bungee Hairline', sans-serif; */
+  font-family: "Monofett", sans-serif;
   font-size: 8vw;
   /* font-size: clamp(2em, 3.5em, 5em); */
   color: rgb(155, 155, 155);
@@ -160,14 +160,14 @@ export default defineComponent({
   justify-self: flex-end;
   margin-bottom: 20px;
   justify-self: flex-end;
-  margin-top: 12px;
+  margin-top: 20px;
 }
 
 .enter-button, .backspace-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: "arial", cursive;
+  font-family: "arial", sans-serif;
   font-size: 3em;
   /* background-color: rgb(155, 155, 155); */
   color: white;
@@ -176,8 +176,8 @@ export default defineComponent({
   height: 4vw;
   padding-bottom: 14px;
   /* font-family: "Advent Pro", sans-serif; */
-  /* font-family: "Bungee Hairline", cursive; */
-  font-family: "Monofett", cursive;
+  /* font-family: "Bungee Hairline", sans-serif; */
+  font-family: "Monofett", sans-serif;
   margin-left: 16px;
   margin-right: 16px; 
 }
@@ -185,6 +185,12 @@ export default defineComponent({
 @media screen and (width >= 900px) {
   .grey {
     font-size: 80px;
+  }
+}
+
+@media screen and (width <= 425px) {
+  .grey {
+    font-size: 50px;
   }
 }
 </style>
