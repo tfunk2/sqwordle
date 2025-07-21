@@ -83,6 +83,7 @@ export default defineComponent({
     const longestStreak: Ref<number> = ref(0);
     const totalWins: Ref<number> = ref(0);
     const totalLosses: Ref<number> = ref(0);
+    const guessesPerWin: Ref<number[]> = ref([])
 
     const shakeWordGuess = ref(false);
 
@@ -123,11 +124,12 @@ export default defineComponent({
           }
           break;
         case "usedWords":
+        case "guessesPerWin":
           if (updateValue === 'clear') {
-            // Clear usedWords
+            // Clear array
             updatedSessionObj[updateKey] = []
           } else {
-            // Add used word to cache
+            // Add value to cached array
             updatedSessionObj[updateKey] = [...parsedSession[updateKey], updateValue]
           }
           break;
@@ -178,23 +180,26 @@ export default defineComponent({
         updateCache('currentGuess', currentGuess.value)
 
         usedWords.value = [...usedWords.value, pendingGuess.value.toLowerCase()];
-        guessedLetters.value = usedWords.value
-          .map((usedWord) => {
-            return usedWord.split("").map((letter, letterIndex) => {
-              return [letter, colorsForWord(usedWord, letterIndex)];
-            });
-          })
-          .flat();
+        guessedLetters.value = usedWords.value.map((usedWord) => {
+          return usedWord.split("").map((letter, letterIndex) => {
+            return [letter, colorsForWord(usedWord, letterIndex)];
+          });
+        }).flat();
+
+        // Guess is CORRECT!
         if (isCurrentGuessCorrect.value) {
           winStreak.value = winStreak.value + 1;
           updateCache('winStreak')
           totalWins.value = totalWins.value + 1;
           updateCache('totalWins')
+          guessesPerWin.value = [...guessesPerWin.value, usedWords.value.length]
+          updateCache('guessesPerWin', usedWords.value.length)
           if (winStreak.value > longestStreak.value) {
             longestStreak.value = longestStreak.value + 1
             updateCache('longestStreak')
           }
         }
+
         pendingGuess.value = "";
         updateCache('usedWords', currentGuess.value)
       } else {
@@ -283,53 +288,55 @@ export default defineComponent({
     })
 
     onMounted(() => {
-          document.addEventListener("DOMContentLoaded", () => {
-      const inputField = document.getElementById("pending-guess");
-      const body = document.getElementsByTagName('body')
+      document.addEventListener("DOMContentLoaded", () => {
+        const inputField = document.getElementById("pending-guess");
+        const body = document.getElementsByTagName('body')
 
-      if (inputField) {
-        // Set initial focus (can also be done with autofocus attribute)
-        inputField.focus();
-        
-        // Re-focus the input field whenever it loses focus
-        inputField.addEventListener("blur", function() {
+        if (inputField) {
+          // Set initial focus (can also be done with autofocus attribute)
           inputField.focus();
-        });
-        
-        body[0].addEventListener("click", function() {
-          inputField.focus();
-        });
+          
+          // Re-focus the input field whenever it loses focus
+          inputField.addEventListener("blur", function() {
+            inputField.focus();
+          });
+          
+          body[0].addEventListener("click", function() {
+            inputField.focus();
+          });
+        }
+      });
+      // Retrieving data
+      const currentSession: any = localStorage.getItem('currentSession');
+      const parsedSession = JSON.parse(currentSession);
+
+      if (!parsedSession) {
+        // Saving data
+        localStorage.setItem('currentSession', JSON.stringify({
+          pendingGuess: '',
+          currentGuess: '',
+          usedWords: [],
+          winStreak: 0,
+          longestStreak: 0,
+          currentWinningWord: '',
+          totalWins: 0,
+          totalLosses: 0,
+          isCurrentGuessCorrect: false,
+          guessesPerWin: []
+        }));
+        setNewWinningWord();
+      } else {
+        console.log('parsedSession', parsedSession)
+        pendingGuess.value = parsedSession.pendingGuess
+        currentGuess.value = parsedSession.currentGuess
+        usedWords.value = parsedSession.usedWords
+        winStreak.value = parsedSession.winStreak
+        longestStreak.value = parsedSession.longestStreak
+        currentWinningWord.value = parsedSession.currentWinningWord
+        totalWins.value = parsedSession.totalWins
+        totalLosses.value = parsedSession.totalLosses
+        guessesPerWin.value = parsedSession.guessesPerWin
       }
-    });
-    // Retrieving data
-    const currentSession: any = localStorage.getItem('currentSession');
-    const parsedSession = JSON.parse(currentSession);
-
-    if (!parsedSession) {
-      // Saving data
-      localStorage.setItem('currentSession', JSON.stringify({
-        pendingGuess: '',
-        currentGuess: '',
-        usedWords: [],
-        winStreak: 0,
-        longestStreak: 0,
-        currentWinningWord: '',
-        totalWins: 0,
-        totalLosses: 0,
-        isCurrentGuessCorrect: false
-      }));
-      setNewWinningWord();
-    } else {
-      console.log('parsedSession', parsedSession)
-      pendingGuess.value = parsedSession.pendingGuess
-      currentGuess.value = parsedSession.currentGuess
-      usedWords.value = parsedSession.usedWords
-      winStreak.value = parsedSession.winStreak
-      longestStreak.value = parsedSession.longestStreak
-      currentWinningWord.value = parsedSession.currentWinningWord
-      totalWins.value = parsedSession.totalWins
-      totalLosses.value = parsedSession.totalLosses
-    }
     })
 
     return {
