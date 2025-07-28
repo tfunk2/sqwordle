@@ -43,6 +43,7 @@
       :winStreak="winStreak"
       :currentWinningWord="currentWinningWord"
       :isCurrentGuessCorrect="isCurrentGuessCorrect"
+      :guesses-per-win="guessesPerWin"
       @next-word="changeWordClearBoard($event)"
     />
     <Keyboard 
@@ -107,7 +108,7 @@ export default defineComponent({
       }
     }
 
-    const updateCache = (updateKey: string, updateValue: string|number|null = null) => {
+    const updateCache = (updateKey: string, updateValue: string|number|null|string[][] = null) => {
       const currentSession = localStorage.getItem('currentSession') || '{}'
       const parsedSession = JSON.parse(currentSession)
       const updatedSessionObj = {...parsedSession}
@@ -185,6 +186,8 @@ export default defineComponent({
             return [letter, colorsForWord(usedWord, letterIndex)];
           });
         }).flat();
+        updateCache('guessedLetters', guessedLetters.value)
+        
 
         // Guess is CORRECT!
         if (isCurrentGuessCorrect.value) {
@@ -322,7 +325,8 @@ export default defineComponent({
           totalWins: 0,
           totalLosses: 0,
           isCurrentGuessCorrect: false,
-          guessesPerWin: []
+          guessesPerWin: [],
+          guessedLetters: []
         }));
         setNewWinningWord();
       } else {
@@ -336,6 +340,7 @@ export default defineComponent({
         totalWins.value = parsedSession.totalWins
         totalLosses.value = parsedSession.totalLosses
         guessesPerWin.value = parsedSession.guessesPerWin
+        guessedLetters.value = parsedSession.guessedLetters
       }
     })
 
@@ -349,6 +354,7 @@ export default defineComponent({
       changeWordClearBoard,
       isCurrentGuessCorrect,
       isGuessingComplete,
+      guessesPerWin,
       usedWords,
       pendingGuess,
       currentGuess,
