@@ -122,7 +122,7 @@ export default defineComponent({
   font-size: 8vw;
   /* font-size: clamp(2em, 3.5em, 5em); */
   color: rgb(155, 155, 155);
-  line-height: 0.7;
+  line-height: 0.8;
   margin: 2px;
 }
 

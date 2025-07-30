@@ -1,6 +1,8 @@
 <template>
   <div class="game-board">
     <div class="guess-container">
+
+      <!-- PREVIOUSLY GUESSED WORD ROWS -->
       <div v-for="word in usedWords" :key="word" class="word-guess">
         <div
           v-for="(letter, letterIndex) in lettersOfGuess(word)"
@@ -10,6 +12,8 @@
           {{ letter.toUpperCase() }}
         </div>
       </div>
+
+      <!-- CURRENT GUESSING ROW -->
       <div 
         v-if="!isGuessingComplete" 
         :class="{'word-guess': true, 'animate__animated animate__headShake': shakeInvalid}"
@@ -39,6 +43,19 @@
         />
         <div
           v-if="pendingGuess.split('').length < 1"
+          class="black letter"
+        />
+      </div>
+
+      <!-- EMPTY ROWS -->
+      <div 
+        v-for="row in (5 - usedWords.length)"
+        :key="row"
+        class="word-guess"
+      >
+        <div
+          v-for="index in 5"
+          :key="index"
           class="black letter"
         />
       </div>
