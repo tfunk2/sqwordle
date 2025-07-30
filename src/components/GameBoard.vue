@@ -3,13 +3,15 @@
     <div class="guess-container">
 
       <!-- PREVIOUSLY GUESSED WORD ROWS -->
-      <div v-for="word in usedWords" :key="word" class="word-guess">
-        <div
-          v-for="(letter, letterIndex) in lettersOfGuess(word)"
-          :class="colorsForWord(word, letterIndex) + ' letter'"
-          :key="letterIndex"
-        >
-          {{ letter.toUpperCase() }}
+      <div v-if="usedWords.length > 0">
+        <div v-for="word in usedWords" :key="word" class="word-guess">
+          <div
+            v-for="(letter, letterIndex) in lettersOfGuess(word)"
+            :class="colorsForWord(word, letterIndex) + ' letter'"
+            :key="letterIndex"
+          >
+            {{ letter.toUpperCase() }}
+          </div>
         </div>
       </div>
 
@@ -48,17 +50,19 @@
       </div>
 
       <!-- EMPTY ROWS -->
-      <div 
-        v-for="row in (5 - usedWords.length)"
-        :key="row"
-        class="word-guess"
-      >
-        <div
-          v-for="index in 5"
-          :key="index"
-          class="black letter"
-        />
-      </div>
+       <div v-if="usedWords.length < 5">
+         <div 
+           v-for="row in (5 - usedWords.length)"
+           :key="row"
+           class="word-guess"
+         >
+           <div
+             v-for="index in 5"
+             :key="index"
+             class="black letter"
+           />
+         </div>
+       </div>
     </div>
   </div>
 </template>
