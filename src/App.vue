@@ -44,6 +44,7 @@
       :currentWinningWord="currentWinningWord"
       :isCurrentGuessCorrect="isCurrentGuessCorrect"
       :guesses-per-win="guessesPerWin"
+      :total-wins="totalWins"
       @next-word="changeWordClearBoard($event)"
     />
     <Keyboard 

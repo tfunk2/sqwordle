@@ -1,14 +1,15 @@
 <template>
   <div class="modal-container">
     <div class="end-game-modal">
+      <StatsChart :total-wins="240"/>
       <div v-if="isCurrentGuessCorrect" class="winning-modal">
-        <!-- <p>Congrats, {{ currentWinningWord.toUpperCase() }} was the word!</p>
-        <p>Streak increased to {{ winStreak }}!</p> -->
+        <p>Congrats, {{ currentWinningWord.toUpperCase() }} was the word!</p>
+        <p>Streak increased to {{ winStreak }}!</p>
         <button @click="handleWordChange('win')">Next Word</button>
       </div>
       <div v-if="!isCurrentGuessCorrect" class="winning-modal">
-        <!-- <p>Sorry, {{ currentWinningWord.toUpperCase() }} was the correct word!</p>
-        <p>Streak dropped back to 0 :(</p> -->
+        <p>Sorry, {{ currentWinningWord.toUpperCase() }} was the correct word!</p>
+        <p>Current streak dropped back to 0</p>
         <button @click="handleWordChange('lose')">Try Again</button>
       </div>
     </div>
@@ -17,9 +18,13 @@
 
 <script lang='ts'>
 import { defineComponent } from "vue";
+import StatsChart from "./StatsChart.vue"
 
 export default defineComponent({
   name: "EndGameModal",
+  components: {
+    StatsChart
+  },
   props: {
     currentGuess: {
       type: String,
@@ -37,6 +42,11 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
+    totalWins: {
+      type: Number,
+      required: false,
+      default: 0
+    }
   },
   data() {
     return {};
@@ -64,6 +74,7 @@ export default defineComponent({
 
 .end-game-modal {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   border-radius: 6px;
@@ -81,7 +92,7 @@ export default defineComponent({
 
 @media screen and (width <= 425px) {
   .end-game-modal {
-    height: 30%;
+    height: 70%;
     width: calc(100% - 32px);
   }
 }
