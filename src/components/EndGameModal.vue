@@ -1,27 +1,33 @@
 <template>
   <div class="modal-container">
     <div class="end-game-modal">
+      <h2 class="end-game-reaction">{{ endGameReaction }}</h2>
       <StatsChart 
         :total-wins="240" 
-        :highlighted-number="guessesPerWin[guessesPerWin.length - 1]"
+        :highlighted-number="highlightedNumber"
         :is-current-guess-correct="isCurrentGuessCorrect"
       />
-      <div v-if="isCurrentGuessCorrect" class="win-content">
-        <p>Congrats, {{ currentWinningWord.toUpperCase() }} was the word!</p>
-        <p>Streak increased to {{ winStreak }}!</p>
-        <button @click="handleWordChange('win')">Next Word</button>
+      <div v-if="isCurrentGuessCorrect" class="bottom-content">
+        <p class="streak-text">Streak increased: <span class="streak-number">{{ winStreak }}</span></p>
+        <p class="win-text">
+          <span id="winning-word">{{ currentWinningWord.toUpperCase() }}</span>
+           was the word
+        </p>
       </div>
-      <div v-if="!isCurrentGuessCorrect" class="lose-content">
-        <p>Sorry, {{ currentWinningWord.toUpperCase() }} was the correct word!</p>
-        <p>Current streak dropped back to 0</p>
-        <button @click="handleWordChange('lose')">Try Again</button>
+      <div v-else class="bottom-content">
+        <!-- <p class="win-text">Streak dropped to <span class="streak-number">0</span></p> -->
+        <p class="win-text">
+          <span id="losing-word">{{ currentWinningWord.toUpperCase() }}</span>
+          was the word
+        </p>
       </div>
+      <p class="next-word-button" @click="emitNextWord">NEXT WORD</p>
     </div>
   </div>
 </template>
 
 <script lang='ts'>
-import { defineComponent, PropType } from "vue";
+import { computed, defineComponent, PropType } from "vue";
 import StatsChart from "./StatsChart.vue"
 
 export default defineComponent({
@@ -57,15 +63,44 @@ export default defineComponent({
       default: () => []
     }
   },
-  data() {
-    return {};
-  },
-  computed: {},
-  methods: {
-    handleWordChange(winOrLose: string): void {
-      this.$emit("next-word", winOrLose);
-    },
-  },
+  setup(props, { emit }) {
+    const emitNextWord = (): void => {
+      emit("next-word");
+    }
+
+    const highlightedNumber = computed(() => {
+      return props.guessesPerWin[props.guessesPerWin.length - 1]
+    })
+
+    const endGameReaction = computed(() => {
+      if (!props.isCurrentGuessCorrect) {
+        return 'So close!'
+      }
+
+      switch (highlightedNumber.value) {
+        case 1:
+          return 'Simply Unbelievable!'
+        case 2:
+          return 'Incredible!'
+        case 3:
+          return 'Impressive!'
+        case 4:
+          return 'You did it!'
+        case 5:
+          return 'Just in time!'
+        case 6:
+          return 'Phew! That was close.'
+        default: 
+          return 'Good job!'
+      }
+    })
+
+    return {
+      endGameReaction,
+      emitNextWord,
+      highlightedNumber
+    }
+  }
 });
 </script>
 
@@ -81,10 +116,11 @@ export default defineComponent({
   background-color: rgba(50, 50, 50, 0.7)
 }
 
-.win-content, .lose-content {
+.bottom-content{
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   height: 30%;
   width: 100%;
 }
@@ -92,13 +128,75 @@ export default defineComponent({
 .end-game-modal {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   border-radius: 6px;
   height: 50%;
   width: 50%;
   background-color: gray;
-  background-image: linear-gradient(to bottom right, black, rgb(128, 128, 128))
+  background-image: linear-gradient(to bottom right, black, rgb(30, 30, 30), black);
+  cursor: default;
+}
+
+.end-game-reaction {
+  color: white;
+  padding-top: 6px;
+  height: fit-content;
+  margin: 0;
+  font-family: 'Bungee Hairline', sans-serif;
+}
+
+.win-text {
+  font-family: 'Bungee Hairline', sans-serif;
+  color: white;
+  font-size: 1.4em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+}
+
+.streak-text {
+  font-family: 'Bungee Hairline', sans-serif;
+  color: white;
+  font-size: 1.4em;
+  margin: 0;
+}
+
+.streak-number {
+  font-family: "Monofett", sans-serif;
+  color: rgb(62, 172, 62);
+  font-size: 2em;
+}
+
+#winning-word {
+  font-family: "Monofett", sans-serif;
+  color: rgb(62, 172, 62);
+  font-size: 2em;
+  letter-spacing: 2px;
+  line-height: 0.8;
+  padding-bottom: 6px;
+}
+
+#losing-word {
+  font-family: "Monofett", sans-serif;
+  color: rgb(214, 40, 40);
+  font-size: 2em;
+  letter-spacing: 2px;
+  line-height: 0.8;
+  padding-bottom: 6px;
+}
+
+.next-word-button {
+  font-family: "Monofett", sans-serif;
+  color: white;
+  font-size: 2em;
+  cursor: pointer;
+  margin-top: 0;
+}
+
+.next-word-button:hover {
+  color: rgb(200, 200, 200);
 }
 
 @media screen and (width >= 900px) {

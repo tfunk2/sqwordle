@@ -45,7 +45,7 @@
       :isCurrentGuessCorrect="isCurrentGuessCorrect"
       :guesses-per-win="guessesPerWin"
       :total-wins="totalWins"
-      @next-word="changeWordClearBoard($event)"
+      @next-word="changeWordClearBoard()"
     />
     <Keyboard 
       :guessed-letters="guessedLetters" 
@@ -234,7 +234,7 @@ export default defineComponent({
       })[letterIndex];
     }
 
-    const changeWordClearBoard = (winOrLose: string): void => {
+    const changeWordClearBoard = (): void => {
       pendingGuess.value = "";
       updateCache('pendingGuess', 'clear')
 
@@ -249,7 +249,7 @@ export default defineComponent({
       guessedLetters.value = [];
       updateCache('guessedLetters', 'clear')
 
-      if (winOrLose === "lose") {
+      if (isCurrentGuessCorrect.value) {
         winStreak.value = 0;
         updateCache('winStreak', 'clear')
         totalLosses.value = totalLosses.value + 1

@@ -133,7 +133,7 @@ export default defineComponent({
   color: white;
   margin: 0;
   font-size: 2em;
-  line-height: 1;
+  line-height: 0.9;
   padding-left: 6px;
   padding-right: 6px;
   box-shadow: 0 0 0 2px rgb(62, 172, 62) inset;
