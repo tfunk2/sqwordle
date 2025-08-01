@@ -1,7 +1,11 @@
 <template>
   <div class="modal-container">
     <div class="end-game-modal">
-      <StatsChart :total-wins="240"/>
+      <StatsChart 
+        :total-wins="240" 
+        :highlighted-number="guessesPerWin[guessesPerWin.length - 1]"
+        :is-current-guess-correct="isCurrentGuessCorrect"
+      />
       <div v-if="isCurrentGuessCorrect" class="win-content">
         <p>Congrats, {{ currentWinningWord.toUpperCase() }} was the word!</p>
         <p>Streak increased to {{ winStreak }}!</p>
@@ -17,7 +21,7 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 import StatsChart from "./StatsChart.vue"
 
 export default defineComponent({
@@ -48,7 +52,7 @@ export default defineComponent({
       default: 0
     },
     guessesPerWin: {
-      type: Array,
+      type: Array as PropType<number[]>,
       required: false,
       default: () => []
     }

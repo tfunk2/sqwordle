@@ -7,7 +7,7 @@
         class="bar-container" 
         id="one-guess-wins"
       >
-        <p class="bar-label-text">{{ barIndex }}</p>
+        <p class="bar-label-text" :style="isCurrentGuessCorrect && barIndex + 1 === highlightedNumber ? 'color: rgb(255, 174, 0);' : ''">{{ barIndex + 1 }}</p>
         <div 
           class="win-side-green" 
           :style="`width: ${percentages[barIndex]}%;`" 
@@ -30,6 +30,10 @@ export default defineComponent({
     },
     highlightedNumber: {
       type: Number,
+      required: true,
+    },
+    isCurrentGuessCorrect: {
+      type: Boolean,
       required: true,
     }
   },
