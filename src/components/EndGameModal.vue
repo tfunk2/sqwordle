@@ -2,12 +2,12 @@
   <div class="modal-container">
     <div class="end-game-modal">
       <StatsChart :total-wins="240"/>
-      <div v-if="isCurrentGuessCorrect" class="winning-modal">
+      <div v-if="isCurrentGuessCorrect" class="win-content">
         <p>Congrats, {{ currentWinningWord.toUpperCase() }} was the word!</p>
         <p>Streak increased to {{ winStreak }}!</p>
         <button @click="handleWordChange('win')">Next Word</button>
       </div>
-      <div v-if="!isCurrentGuessCorrect" class="winning-modal">
+      <div v-if="!isCurrentGuessCorrect" class="lose-content">
         <p>Sorry, {{ currentWinningWord.toUpperCase() }} was the correct word!</p>
         <p>Current streak dropped back to 0</p>
         <button @click="handleWordChange('lose')">Try Again</button>
@@ -46,6 +46,11 @@ export default defineComponent({
       type: Number,
       required: false,
       default: 0
+    },
+    guessesPerWin: {
+      type: Array,
+      required: false,
+      default: () => []
     }
   },
   data() {
@@ -70,6 +75,14 @@ export default defineComponent({
   height: 100vh;
   width: 100vw;
   background-color: rgba(50, 50, 50, 0.7)
+}
+
+.win-content, .lose-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 30%;
+  width: 100%;
 }
 
 .end-game-modal {

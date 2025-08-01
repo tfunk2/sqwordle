@@ -1,48 +1,52 @@
 <template>
   <container class="stats-chart-container">
-    <div class="bar-labels-container">
-      <div class="bar-label">
-        <p class="bar-label-text">1</p>
-      </div>
-      <div class="bar-label">
-        <p class="bar-label-text">2</p>
-      </div>
-      <div class="bar-label">
-        <p class="bar-label-text">3</p>
-      </div>
-      <div class="bar-label">
-        <p class="bar-label-text">4</p>
-      </div>
-      <div class="bar-label">
-        <p class="bar-label-text">5</p>
-      </div>
-      <div class="bar-label">
-        <p class="bar-label-text">6</p>
-      </div>
-    </div>
     <div class="chart-container">
       <div class="bar-container" id="one-guess-wins">
-        <div class="win-side-green" :style="`width: ${percentages[0]}%;`" />
+        <p class="bar-label-text">1</p>
+        <div 
+          class="win-side-green" 
+          :style="`width: ${percentages[0]}%;`" 
+        />
         <p class="stat-text-white">{{ fakeStats['one'] }}</p>
       </div>
       <div class="bar-container" id="two-guess-wins">
-        <div class="win-side-green" :style="`width: ${percentages[1]}%;`" />
+        <p class="bar-label-text">2</p>
+        <div 
+          class="win-side-green" 
+          :style="`width: ${percentages[1]}%;`" 
+        />
         <p class="stat-text-white">{{ fakeStats['two'] }}</p>
       </div>
       <div class="bar-container" id="three-guess-wins">
-        <div class="win-side-green" :style="`width: ${percentages[2]}%;`" />
+        <p class="bar-label-text">3</p>
+        <div 
+          class="win-side-green" 
+          :style="`width: ${percentages[2]}%;`" 
+        />
         <p class="stat-text-white">{{ fakeStats['three'] }}</p>
       </div>
       <div class="bar-container" id="four-guess-wins">
-        <div class="win-side-green" :style="`width: ${percentages[3]}%;`" />
+        <p class="bar-label-text">4</p>
+        <div 
+          class="win-side-green" 
+          :style="`width: ${percentages[3]}%;`" 
+        />
         <p class="stat-text-white">{{ fakeStats['four'] }}</p>
       </div>
       <div class="bar-container" id="five-guess-wins">
-        <div class="win-side-green" :style="`width: ${percentages[4]}%;`" />
+        <p class="bar-label-text">5</p>
+        <div 
+          class="win-side-green" 
+          :style="`width: ${percentages[4]}%;`" 
+        />
         <p class="stat-text-white">{{ fakeStats['five'] }}</p>
       </div>
       <div class="bar-container" id="six-guess-wins">
-        <div class="win-side-green" :style="`width: ${percentages[5]}%;`" />
+        <p class="bar-label-text">6</p>
+        <div 
+          class="win-side-green" 
+          :style="`width: ${percentages[5]}%;`" 
+        />
         <p class="stat-text-white">{{ fakeStats['six'] }}</p>
       </div>
     </div>
@@ -53,11 +57,15 @@
 import { computed, defineComponent } from "vue";
 
 export default defineComponent({
-  name: "EndGameModal",
+  name: "StatsChart",
   props: {
     totalWins: {
       type: Number,
       required: true
+    },
+    highlightedNumber: {
+      type: Number,
+      required: true,
     }
   },
   setup(props) {
@@ -98,15 +106,29 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.stats-chart-container {
+  height: 70%;
+  display: flex;
+
+}
+
 .chart-container {
-  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
   height: 100%;
+  padding-left: 30%;
+  padding-right: auto;
 }
 
 .bar-container {
   display: flex;
-  width: 100% !important;
+  width: 100%;
+  align-items: center;
   margin-top: 4px;
+  height: 10%;
 }
 
 .bar-labels-container {
@@ -115,7 +137,9 @@ export default defineComponent({
 
 .win-side-green {
   background-color: rgb(62, 172, 62);
-  height: 22px;
+  height: 100%;
+  border-radius: 0px 6px 6px 0px;
+  padding-left: 4px;
 }
 
 .stat-text-white {
@@ -123,6 +147,7 @@ export default defineComponent({
   font-family: 'Bungee Hairline', sans-serif;
   margin: 0;
   padding-left: 4px;
+  font-size: 100%;
 }
 
 .bar-label {
@@ -138,13 +163,18 @@ export default defineComponent({
   font-family: "Monofett", sans-serif;
   color: white;
   margin: 0;
-  font-size: 19px;
+  font-size: 2em;
   line-height: 1;
+  padding-left: 6px;
+  padding-right: 6px;
+  box-shadow: 0 0 0 2px rgb(62, 172, 62) inset;
+  border-radius: 6px 0px 0px 6px;
+  height: 100%;
 }
 
 container {
   display: flex;
   justify-content: center;
-  width: 80%;
+  width: 100%;
 }
 </style>
