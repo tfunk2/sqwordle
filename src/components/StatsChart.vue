@@ -1,53 +1,18 @@
 <template>
   <container class="stats-chart-container">
     <div class="chart-container">
-      <div class="bar-container" id="one-guess-wins">
-        <p class="bar-label-text">1</p>
+      <div 
+        v-for="(bar, barIndex) in 6"
+        :key="bar"
+        class="bar-container" 
+        id="one-guess-wins"
+      >
+        <p class="bar-label-text">{{ barIndex }}</p>
         <div 
           class="win-side-green" 
-          :style="`width: ${percentages[0]}%;`" 
+          :style="`width: ${percentages[barIndex]}%;`" 
         />
-        <p class="stat-text-white">{{ fakeStats['one'] }}</p>
-      </div>
-      <div class="bar-container" id="two-guess-wins">
-        <p class="bar-label-text">2</p>
-        <div 
-          class="win-side-green" 
-          :style="`width: ${percentages[1]}%;`" 
-        />
-        <p class="stat-text-white">{{ fakeStats['two'] }}</p>
-      </div>
-      <div class="bar-container" id="three-guess-wins">
-        <p class="bar-label-text">3</p>
-        <div 
-          class="win-side-green" 
-          :style="`width: ${percentages[2]}%;`" 
-        />
-        <p class="stat-text-white">{{ fakeStats['three'] }}</p>
-      </div>
-      <div class="bar-container" id="four-guess-wins">
-        <p class="bar-label-text">4</p>
-        <div 
-          class="win-side-green" 
-          :style="`width: ${percentages[3]}%;`" 
-        />
-        <p class="stat-text-white">{{ fakeStats['four'] }}</p>
-      </div>
-      <div class="bar-container" id="five-guess-wins">
-        <p class="bar-label-text">5</p>
-        <div 
-          class="win-side-green" 
-          :style="`width: ${percentages[4]}%;`" 
-        />
-        <p class="stat-text-white">{{ fakeStats['five'] }}</p>
-      </div>
-      <div class="bar-container" id="six-guess-wins">
-        <p class="bar-label-text">6</p>
-        <div 
-          class="win-side-green" 
-          :style="`width: ${percentages[5]}%;`" 
-        />
-        <p class="stat-text-white">{{ fakeStats['six'] }}</p>
+        <p class="stat-text-white">{{ fakeStats[barIndex] }}</p>
       </div>
     </div>
   </container>
@@ -69,22 +34,22 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const fakeStats = {
-      'one': 5,
-      'two': 12,
-      'three': 25,
-      'four': 42,
-      'five': 56,
-      'six': 100
-    }
+    const fakeStats = [
+      5,
+      12,
+      25,
+      42,
+      56,
+      100
+    ]
 
     const percentages = computed(() => {
-      const oneGuessWinPercentage = fakeStats['one'] / props.totalWins
-      const twoGuessWinPercentage = fakeStats['two'] / props.totalWins
-      const threeGuessWinPercentage = fakeStats['three'] / props.totalWins
-      const fourGuessWinPercentage = fakeStats['four'] / props.totalWins
-      const fiveGuessWinPercentage = fakeStats['five'] / props.totalWins
-      const sixGuessWinPercentage = fakeStats['six'] / props.totalWins
+      const oneGuessWinPercentage = fakeStats[0] / props.totalWins
+      const twoGuessWinPercentage = fakeStats[1] / props.totalWins
+      const threeGuessWinPercentage = fakeStats[2] / props.totalWins
+      const fourGuessWinPercentage = fakeStats[3] / props.totalWins
+      const fiveGuessWinPercentage = fakeStats[4] / props.totalWins
+      const sixGuessWinPercentage = fakeStats[5] / props.totalWins
 
       return [
         // Math.round(num * 100) / 100
